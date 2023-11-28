@@ -8,12 +8,14 @@ import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.project.bookforeast.dto.UserDTO;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class JwtUtil {
@@ -40,7 +42,7 @@ public class JwtUtil {
 	
 	private String createToken(Long expirationPeriod, UserDTO userDTO) {
 		Map<String, Object> claims = new HashMap<>();
-		claims.put("sub", userDTO.getNickname());
+		claims.put("sub", userDTO.getSocialId());
 		claims.put("iss", userDTO.getSocialProvider());
 		
 		
@@ -60,9 +62,10 @@ public class JwtUtil {
 	}
 	
 	
-	public Boolean validateToken(String token, String name, String socialProvider) {
-		final String nameInToken = extractClaim(token, Claims::getSubject);
-		boolean isUser = nameInToken.equals(name);
+	public Boolean validateToken(String token, String socialId, String socialProvider) {
+		final String socialIdInToken = extractClaim(token, Claims::getSubject);
+		final String socialProviderInToken = extractClaim(token, Claims::getIssuer);
+		boolean isUser = socialIdInToken.equals(socialId)  && socialProviderInToken.equals(socialProvider);
 
 		Date expirationDate = extractClaim(token, Claims::getExpiration);
 		boolean isTokenExpired = expirationDate.before(new Date());
@@ -90,5 +93,13 @@ public class JwtUtil {
 		tokenMap.put("refreshToken", refreshToken);
 		
 		return tokenMap;
+	}
+	
+	public String extractTokenFromHeader(HttpServletRequest request) {
+		String header = request.getHeader("Authorization");
+		if(StringUtils.hasText(header) && header.startsWith("Bearer ")) {
+			return header.substring(7);
+		}
+		return null;
 	}
 }

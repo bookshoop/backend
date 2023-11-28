@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.bookforeast.common.security.UserRole;
 import com.project.bookforeast.dto.CodeDTO;
 import com.project.bookforeast.dto.UserDTO;
 import com.project.bookforeast.entity.Code;
@@ -45,20 +46,31 @@ public class UserServiceImpl implements UserService {
 	
 	
 	public UserDTO socialLogin(UserDTO userDTO, String contentName, MultipartFile proFile) {
-		UserDTO findUser = findSocialUserBySocialId(userDTO);
+		User findUser = findUserBySocialIdAndSocialProvider(userDTO);
 		
 		if(findUser == null) {
 			findUser = socialUserSave(userDTO, "user", proFile);
 		}
 		
-		return findUser;
+		return findUser.toDTO();
 	}
+//	
+//	public User socialLogin(UserDTO userDTO) {
+//		User findUser = findUserBySocialIdAndSocialProvider(userDTO);
+//		
+//		if(findUser == null) {
+//			checkSocialUserSaveValid(userDTO);
+//			userDTO.setRole(UserRole.USER.getRole());
+//			findUser = userRepository.save(userDTO.toEntity()); 
+//		}
+//		
+//		return findUser;
+//	}
 	
-	
-	UserDTO socialUserSave(UserDTO userDTO, String contentName, MultipartFile proFile) {
+	User socialUserSave(UserDTO userDTO, String contentName, MultipartFile proFile) {
 		checkSocialUserSaveValid(userDTO);
 		
-		userDTO.setPermission(10);
+		userDTO.setRole(UserRole.USER.getRole());
 		User user = userRepository.save(userDTO.toEntity()); 
 		
 		// 파일이 있고 컨텐츠 name이 있는 경우 파일 등록서비스 호출
@@ -73,7 +85,7 @@ public class UserServiceImpl implements UserService {
 			genreService.saveLikeGenres(user, likeGenreCodeIds);
 		}
 		
-		return user.toDTO();
+		return user;
 	}
 
 
@@ -91,19 +103,11 @@ public class UserServiceImpl implements UserService {
 		if(checkSocialUserAlreadyExist(userDTO)) {
 			throw new UserException(UserErrorResult.DUPLICATED_USER_REGISTER);
 		}
-				
-			
-		if(userRepository.findByNickname(userDTO.getNickname()) != null) {
-			throw new UserException(UserErrorResult.ALREADY_USED_NICKNAME);
-		}
+
 	}
 
 
-	private boolean checkSocialLoginNessaryValueExist(UserDTO userDTO) {
-		if(userDTO.getNickname() == null || "".equals(userDTO.getNickname())) {
-			return false;
-		}
-		
+	private boolean checkSocialLoginNessaryValueExist(UserDTO userDTO) {		
 		if(userDTO.getSocialId() == null || "".equals(userDTO.getSocialId())) {
 			return false;
 		}
@@ -134,7 +138,7 @@ public class UserServiceImpl implements UserService {
 	public UserDTO signUp(UserDTO userDTO, String contentName, MultipartFile proFile) {
 		checkSignUpVaild(userDTO);
 		
-		userDTO.setPermission(10);
+		userDTO.setRole(UserRole.USER.getRole());
 		setEncodedPassword(userDTO);
 		User user = userRepository.save(userDTO.toEntity()); 
 		
@@ -248,13 +252,13 @@ public class UserServiceImpl implements UserService {
 
 	
 
- 	UserDTO findSocialUserBySocialId(UserDTO userDTO) {
+	public User findUserBySocialIdAndSocialProvider(UserDTO userDTO) {
 		String socialId = userDTO.getSocialId();
 		String socialProvider = userDTO.getSocialProvider();
 		User user = userRepository.findBySocialIdAndSocialProvider(socialId, socialProvider);
 		
 		if(user != null) {
-			return user.toDTO();
+			return user;
 		} else {
 			return null;
 		}

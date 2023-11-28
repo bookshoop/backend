@@ -10,48 +10,64 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.bookforeast.common.security.JwtUtil;
+import com.project.bookforeast.common.security.SecurityService;
 import com.project.bookforeast.dto.UserDTO;
 import com.project.bookforeast.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 
 @RestController
 public class UserController {
 	
 	private final UserService userService;
+	private final SecurityService securityService;
 	private final JwtUtil jwtUtil;
 	
-	private UserController(UserService userService, JwtUtil jwtUtil) {
+	private UserController(UserService userService, JwtUtil jwtUtil, SecurityService securityService) {
 		this.userService = userService;
 		this.jwtUtil = jwtUtil;
+		this.securityService = securityService;
 	}
 	
 	
 	@PostMapping("/api/u/v1/users/social-login")
-	public  ResponseEntity<Map<String, String>> socialLogin(@RequestParam Map<String, Object> requestParam, @RequestPart("profile") MultipartFile profile) {
-		UserDTO userDTO = userService.getUserDataInParameter(requestParam);
+	public ResponseEntity<Map<String, String>> socialLogin(@RequestParam Map<String, Object> requestParam, @RequestPart("profile") MultipartFile profile) {
+		UserDTO userDTO = userService.getUserDataInParameter(requestParam);		
+		// 받아온 정보를 바당으로 db에 저장
 		UserDTO savedOrFindUser = userService.socialLogin(userDTO, "user", profile);
+		// security처리
+		securityService.saveUserInSecurityContext(userDTO);
+		// 토큰 발급
 		Map<String, String> tokenMap = jwtUtil.initToken(savedOrFindUser);
 	
 		return ResponseEntity.ok(tokenMap);
 	}
-	
-	
-	@PostMapping("/api/u/v1/users/signup")
-	public ResponseEntity<Void> signup(@RequestParam Map<String, Object> requestParam, @RequestPart("profile") MultipartFile profile) {
-		UserDTO userDTO = userService.getUserDataInParameter(requestParam);
-		UserDTO savedUser = userService.signUp(userDTO, "user", profile);
 		
-		return ResponseEntity.ok().build();
-	}
 	
-	@PostMapping("/api/u/v1/users/login")
-	public ResponseEntity<Map<String, String>> login(@RequestParam Map<String, Object> requestParam) {
-		UserDTO userDTO = userService.getUserDataInParameter(requestParam);
-		UserDTO findUser = userService.login(userDTO);
-		Map<String, String> tokenMap = jwtUtil.initToken(findUser);
+	@PostMapping("/api/u/v1/user/refreshToken")
+	public ResponseEntity<Map<String, String>> checkRefreshToken(HttpServletRequest request) {
+		String refreshToken = jwtUtil.extractTokenFromHeader(request);
+		// jwtutils에서 refreshtoken검증
 		
-		return ResponseEntity.ok(tokenMap);
+		return null;
 	}
+//	@PostMapping("/api/u/v1/users/signup")
+//	public ResponseEntity<Void> signup(@RequestParam Map<String, Object> requestParam, @RequestPart("profile") MultipartFile profile) {
+//		UserDTO userDTO = userService.getUserDataInParameter(requestParam);
+//		UserDTO savedUser = userService.signUp(userDTO, "user", profile);
+//		
+//		return ResponseEntity.ok().build();
+//	}
+//	
+//	@PostMapping("/api/u/v1/users/login")
+//	public ResponseEntity<Map<String, String>> login(@RequestParam Map<String, Object> requestParam) {
+//		UserDTO userDTO = userService.getUserDataInParameter(requestParam);
+//		UserDTO findUser = userService.login(userDTO);
+//		Map<String, String> tokenMap = jwtUtil.initToken(findUser);
+//		
+//		return ResponseEntity.ok(tokenMap);
+//	}
 	
 
 }

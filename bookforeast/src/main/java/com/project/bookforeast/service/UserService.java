@@ -3,6 +3,7 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 import com.project.bookforeast.dto.UserDTO;
+import com.project.bookforeast.entity.User;
 
 public interface UserService {
 	public UserDTO socialLogin(UserDTO userDTO, String string, MultipartFile proFile);
@@ -12,4 +13,6 @@ public interface UserService {
 	public UserDTO signUp(UserDTO userDTO, String string, MultipartFile profile);
 
 	public UserDTO login(UserDTO userDTO);
+
+//	public User socialLogin(UserDTO userDTO);
 }

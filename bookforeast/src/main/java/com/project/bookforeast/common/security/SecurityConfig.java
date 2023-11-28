@@ -16,15 +16,11 @@ import org.springframework.util.concurrent.SuccessCallback;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-	private JwtUtil jwtUtil;
-	private JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler;
-
 	
-	@Autowired
-	public SecurityConfig(JwtUtil jwtUtil, JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler) {
-		this.jwtUtil = jwtUtil;
-		this.jwtAuthenticationSuccessHandler = jwtAuthenticationSuccessHandler;
+	JwtAuthorizationFilter jwtAuthorizationFilter;
+	
+	public SecurityConfig(JwtAuthorizationFilter jwtAuthorizationFilter) {
+		this.jwtAuthorizationFilter = jwtAuthorizationFilter;
 	}
 	
 	@Bean
@@ -44,15 +40,9 @@ public class SecurityConfig {
 			.cors(cors -> {
 				cors.disable();
 			})
-			.formLogin(formLogin -> {
-				formLogin
-					.loginProcessingUrl("/api/u/v1/users/login")
-					.usernameParameter("phoneNumber")
-					.passwordParameter("password")
-					.successHandler(jwtAuthenticationSuccessHandler);
-			})
+			
 			.httpBasic(Customizer.withDefaults())
-			.addFilterBefore(new JwtAuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
 			.logout(logout -> logout.logoutSuccessUrl("/").permitAll());
 			
 		

@@ -44,7 +44,7 @@ public class UserDTO {
 	private LocalDateTime updateDt;
 	private LocalDateTime deleteDt;
 	private FileGroupDTO fileGroupDTO;
-	private int permission;
+	private String role;
 	private List<Integer> likeGenres;
 	private String pushToken;
 	
@@ -59,7 +59,7 @@ public class UserDTO {
 										.socialProvider(socialProvider)
 										.socialId(socialId)
 										.deleteDt(deleteDt)
-										.permission(permission)
+										.role(role)
 										.pushToken(pushToken)
 										;
 									

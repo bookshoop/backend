@@ -85,7 +85,7 @@ public class UserServiceTest {
 		
 		
 		// when
- 		final UserDTO result = userService.socialUserSave(userDTO, "testContentName", mockFile);
+ 		final User result = userService.socialUserSave(userDTO, "testContentName", mockFile);
 		
 		// then
 		assertThat(result.getSocialId()).isEqualTo(userDTO.getSocialId());
@@ -188,7 +188,7 @@ public class UserServiceTest {
 		doReturn(userDTO.toEntity()).when(userRepository).findBySocialIdAndSocialProvider(socialId, socialProvider);
 		
 		// when
-		final UserDTO result = userService.findSocialUserBySocialId(userDTO);
+		final User result = userService.findUserBySocialIdAndSocialProvider(userDTO);
 		
 		// then
 		assertEquals(userDTO.getSocialId(), result.getSocialId());
@@ -205,7 +205,7 @@ public class UserServiceTest {
 		doReturn(null).when(userRepository).findBySocialIdAndSocialProvider(socialId, socialProvider);		
 
 		// when
-		final UserDTO result = userService.findSocialUserBySocialId(userDTO);
+		final User result = userService.findUserBySocialIdAndSocialProvider(userDTO);
 		
 		// then
 		assertEquals(result, null);

@@ -59,7 +59,7 @@ public class User {
 	@JoinColumn(name = "profile_id")
 	private FileGroup fileGroup;
 	
-	private int permission;
+	private String role;
 	private String pushToken;
 	
 	public UserDTO toDTO() {
@@ -75,7 +75,7 @@ public class User {
 													.registDt(registDt)
 													.updateDt(updateDt)
 													.deleteDt(deleteDt)
-													.permission(permission)
+													.role(role)
 													.pushToken(pushToken)
 													; 
 		
