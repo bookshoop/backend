@@ -30,7 +30,7 @@ public class File {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int fileId;
+	private Long fileId;
 	
 	@ManyToOne
 	@JoinColumn(name = "filegroup_id")

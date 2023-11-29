@@ -8,6 +8,6 @@ import com.project.bookforeast.entity.User;
 
 public interface GenreService {
 
-	boolean saveLikeGenres(User user, List<Integer> likeGenreCodeIds);
+	boolean saveLikeGenres(User user, List<Long> likeGenreCodeIds);
 
 }

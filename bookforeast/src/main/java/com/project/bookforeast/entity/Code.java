@@ -1,7 +1,9 @@
 package com.project.bookforeast.entity;
 
+
 import com.project.bookforeast.dto.CodeDTO;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,8 +24,9 @@ public class Code {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int codeId;
+	private Long codeId;
 	private String codename;
+	@Column(name = "upper_code_id")
 	private int upperCodeId;
 	
 	public CodeDTO toDTO() {

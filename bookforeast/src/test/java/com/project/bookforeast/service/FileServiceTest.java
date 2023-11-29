@@ -15,9 +15,11 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
@@ -32,9 +34,7 @@ import com.project.bookforeast.repository.FileGroupRepository;
 import com.project.bookforeast.repository.FileRepository;
 
 
-@SpringBootTest
-@DirtiesContext
-@Transactional
+@ExtendWith(MockitoExtension.class)
 public class FileServiceTest {
 
 	@InjectMocks
@@ -115,7 +115,7 @@ public class FileServiceTest {
 	
 	private FileGroup fileGroupBuilder() {
 		FileGroup fileGroup = FileGroup.builder()
-										.filegroupId(9999999)
+										.filegroupId(9999999L)
 										.fileList(new ArrayList<>())
 										.build();
 		return fileGroup;

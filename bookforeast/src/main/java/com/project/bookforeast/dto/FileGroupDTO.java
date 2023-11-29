@@ -21,7 +21,7 @@ import lombok.ToString;
 @ToString
 public class FileGroupDTO {
 	
-	private int filegroupId;
+	private Long filegroupId;
 	private LocalDateTime registDt;
 	List<FileDTO> fileList;
 	

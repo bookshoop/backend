@@ -1,7 +1,8 @@
 package com.project.bookforeast.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,38 +12,46 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.bookforeast.common.security.SecurityServiceImpl;
 import com.project.bookforeast.dto.UserDTO;
+import com.project.bookforeast.error.GlobalExceptionHandler;
 import com.project.bookforeast.service.UserServiceImpl;
 
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 public class UserControllerTest {
 
 	@InjectMocks
 	UserController userController;
 	
-	@Autowired
+	@Mock
 	UserServiceImpl userService;
 	
-	@Autowired
+	@Mock
+	SecurityServiceImpl securityService;
+	
+	
 	private MockMvc mockMvc;
 	private ObjectMapper objectMapper;
 
 	@BeforeEach
 	public void init() {
+		mockMvc = MockMvcBuilders.standaloneSetup(userController)
+					.setControllerAdvice(new GlobalExceptionHandler())
+					.build();
+		
 		objectMapper = new ObjectMapper();
 	}
 	
@@ -53,7 +62,7 @@ public class UserControllerTest {
 	public void socialLoginSuccess() throws Exception {
 		// given
 		final String url = "/api/u/v1/users/social-login";
-		List<Integer> likeGenres = makeMockLikeGenres();
+		List<Long> likeGenres = makeMockLikeGenres();
 		MockMultipartFile profile = new MockMultipartFile("profile", "profile.jpg", MediaType.IMAGE_JPEG_VALUE, "profile image content".getBytes());
 		
 		// when 
@@ -79,7 +88,7 @@ public class UserControllerTest {
 	public void userSignUpSuccess() throws Exception {
 		// given
 		final String url = "/api/u/v1/users/signup";
-		List<Integer> likeGenres = makeMockLikeGenres();
+		List<Long> likeGenres = makeMockLikeGenres();
 		MockMultipartFile profile = new MockMultipartFile("profile", "profile.jpg", MediaType.IMAGE_JPEG_VALUE, "profile image content".getBytes());
 		
 		// when 
@@ -121,7 +130,7 @@ public class UserControllerTest {
 	
 	private UserDTO userDTOMaker() {
 		UserDTO userDTO = new UserDTO();
-		List<Integer> likeGenres = makeMockLikeGenres();
+		List<Long> likeGenres = makeMockLikeGenres();
 		
 		userDTO.setNickname("testNickName");
 		userDTO.setMobile("01012345678");
@@ -132,11 +141,11 @@ public class UserControllerTest {
 		return userDTO;
 	}
 
-	private List<Integer> makeMockLikeGenres() {
-		List<Integer> likeGenres = new ArrayList<>();
-		likeGenres.add(2);
-		likeGenres.add(3);
-		likeGenres.add(4);
+	private List<Long> makeMockLikeGenres() {
+		List<Long> likeGenres = new ArrayList<>();
+		likeGenres.add(2L);
+		likeGenres.add(3L);
+		likeGenres.add(4L);
 		
 		return likeGenres;
 	}

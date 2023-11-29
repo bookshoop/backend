@@ -24,7 +24,7 @@ import lombok.ToString;
 @ToString
 public class UserDTO {
 	
-	private int userId;
+	private Long userId;
 	
 	@NotNull
 	private String nickname;
@@ -45,8 +45,9 @@ public class UserDTO {
 	private LocalDateTime deleteDt;
 	private FileGroupDTO fileGroupDTO;
 	private String role;
-	private List<Integer> likeGenres;
+	private List<Long> likeGenres;
 	private String pushToken;
+	private String refreshToken;
 	
 	public User toEntity() {
 		User.UserBuilder entity = 	User.builder()
@@ -61,6 +62,7 @@ public class UserDTO {
 										.deleteDt(deleteDt)
 										.role(role)
 										.pushToken(pushToken)
+										.refreshToken(refreshToken)
 										;
 									
 		if(codeDTO != null) {

@@ -30,7 +30,7 @@ public class FileGroup {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int filegroupId;
+	private Long filegroupId;
 	
 	@CreatedDate
 	private LocalDateTime registDt;

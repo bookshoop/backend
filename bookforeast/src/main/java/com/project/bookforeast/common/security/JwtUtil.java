@@ -6,11 +6,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.project.bookforeast.dto.UserDTO;
+import com.project.bookforeast.entity.User;
+import com.project.bookforeast.error.TokenException;
+import com.project.bookforeast.error.UserException;
+import com.project.bookforeast.error.result.TokenErrorResult;
+import com.project.bookforeast.error.result.UserErrorResult;
+import com.project.bookforeast.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -20,6 +27,15 @@ import jakarta.servlet.http.HttpServletRequest;
 @Service
 public class JwtUtil {
 
+	
+	private final UserRepository userRepository;
+	
+	@Autowired
+	public JwtUtil(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
+	
+	
 	@Value("${jwt.secret-key}")
 	private String SECRETKEY;
 	
@@ -62,22 +78,56 @@ public class JwtUtil {
 	}
 	
 	
-	public Boolean validateToken(String token, String socialId, String socialProvider) {
+	public Boolean validateAccessToken(String token, String socialId, String socialProvider) {
 		final String socialIdInToken = extractClaim(token, Claims::getSubject);
 		final String socialProviderInToken = extractClaim(token, Claims::getIssuer);
 		boolean isUser = socialIdInToken.equals(socialId)  && socialProviderInToken.equals(socialProvider);
-
-		Date expirationDate = extractClaim(token, Claims::getExpiration);
-		boolean isTokenExpired = expirationDate.before(new Date());
+		boolean isTokenExpired = checkTokenExpired(token);
 		
 		return isUser && !isTokenExpired;
 	}
 	
 	
-	public Map<String, String> initToken(UserDTO userDTO) {
+	public Boolean validateRefreshToken(String refreshToken) {
+		User user = userRepository.findByRefreshToken(refreshToken);
+		
+		if(user == null) {
+			throw new TokenException(TokenErrorResult.TOKEN_EXPIRED);
+		}
+		
+		String refreshTokenInDB = user.getRefreshToken(); 
+		if(!refreshToken.equals(refreshTokenInDB) || !checkTokenExpired(refreshTokenInDB)) {
+			throw new TokenException(TokenErrorResult.TOKEN_EXPIRED);
+		}
+		
+		return true;
+	}
+	
+	
+	private boolean checkTokenExpired(String token) {
+		Date expirationDate = extractClaim(token, Claims::getExpiration);
+		boolean isTokenExpired = expirationDate.before(new Date());
+		return isTokenExpired;
+	}
+
+	
+	public Map<String, String> initToken(UserDTO savedOrFindUser) {
+		Map<String, String> tokenMap = new HashMap<>();
+		String accessToken = generateAccessToken(savedOrFindUser);
+		String refreshToken = generateRefreshToken(savedOrFindUser);
+		
+		tokenMap.put("accessToken", accessToken);
+		tokenMap.put("refreshToken", refreshToken);
+		
+		updRefreshTokenInDB(refreshToken, savedOrFindUser);
+		
+		return tokenMap;
+	}
+	
+
+	public Map<String, String> refreshingAccessToken(UserDTO userDTO, String refreshToken) {
 		Map<String, String> tokenMap = new HashMap<>();
 		String accessToken = generateAccessToken(userDTO);
-		String refreshToken = generateRefreshToken(userDTO);
 		
 		tokenMap.put("accessToken", accessToken);
 		tokenMap.put("refreshToken", refreshToken);
@@ -85,15 +135,12 @@ public class JwtUtil {
 		return tokenMap;
 	}
 	
-	public Map<String, String> refreshingToken(UserDTO userDTO, String refreshToken) {
-		Map<String, String> tokenMap = new HashMap<>();
-		String accessToken = generateAccessToken(userDTO);
-		
-		tokenMap.put("accessToken", accessToken);
-		tokenMap.put("refreshToken", refreshToken);
-		
-		return tokenMap;
+	
+	private void updRefreshTokenInDB(String refreshToken, UserDTO savedOrFindUser) {
+		savedOrFindUser.setRefreshToken(refreshToken);
+		userRepository.save(savedOrFindUser.toEntity());
 	}
+
 	
 	public String extractTokenFromHeader(HttpServletRequest request) {
 		String header = request.getHeader("Authorization");

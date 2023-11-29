@@ -17,12 +17,8 @@ import com.project.bookforeast.entity.User;
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class UserRepositoryTest {
 	
-	private UserRepository userRepository;
-	
 	@Autowired
-	public UserRepositoryTest(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
+	private UserRepository userRepository;
 	
 
 	@Test

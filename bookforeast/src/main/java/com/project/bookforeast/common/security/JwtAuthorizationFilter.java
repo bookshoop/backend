@@ -11,6 +11,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.project.bookforeast.dto.UserDTO;
+import com.project.bookforeast.error.TokenException;
+import com.project.bookforeast.error.result.TokenErrorResult;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -39,8 +41,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 		if(checkAccessTokenValid(request)) {
 			return;
 		} else {
-			requireRefreshToken(response);
-			return;
+			throw new TokenException(TokenErrorResult.REFRESH_TOKEN_NEED);
 		}
 	}
 
@@ -52,19 +53,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 		String socialId = loginUser.getSocialId();
 		String socialProvider = loginUser.getSocialProvider();
 		
-		if(accessToken != null && jwtUtil.validateToken(accessToken, socialId, socialProvider)) {
+		if(accessToken != null && jwtUtil.validateAccessToken(accessToken, socialId, socialProvider)) {
 			return true;			
 		}
 		
 		return false;
 	}
-
-
-	private void requireRefreshToken(HttpServletResponse response) throws IOException {
-		response.setStatus(HttpStatus.UNAUTHORIZED.value());
-		response.getWriter().write("Refresh Token is required");
-		response.getWriter().flush();
-		response.getWriter().close();
-	}
-	
 }

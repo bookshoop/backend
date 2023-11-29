@@ -25,17 +25,17 @@ public class GenreServiceImpl implements GenreService {
 	
 	
 	@Override
-	public boolean saveLikeGenres(User user, List<Integer> likeGenreCodeIds) {		
+	public boolean saveLikeGenres(User user, List<Long> likeGenreCodeIds) {		
 		List<LikeGenre> likeGenres = makeLikeGenreList(likeGenreCodeIds, user);
 		genreRepository.saveAll(likeGenres);
 		return true;
 	}
 
 
-	private List<LikeGenre> makeLikeGenreList(List<Integer> likeGenreCodeIds, User user) {
+	private List<LikeGenre> makeLikeGenreList(List<Long> likeGenreCodeIds, User user) {
 		List<LikeGenre> likeGenres = new ArrayList<>();
 		
-		for(int likeGenreCodeId : likeGenreCodeIds) {
+		for(Long likeGenreCodeId : likeGenreCodeIds) {
 			CodeDTO codeDTO = new CodeDTO();
 			codeDTO.setCodeId(likeGenreCodeId);
 

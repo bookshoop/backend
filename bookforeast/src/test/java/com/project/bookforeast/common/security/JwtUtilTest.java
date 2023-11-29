@@ -3,32 +3,34 @@ package com.project.bookforeast.common.security;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.TestPropertySource;
 
 import com.project.bookforeast.dto.UserDTO;
+import com.project.bookforeast.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class JwtUtilTest {
 
 
+	@InjectMocks
 	private JwtUtil jwtUtil;
 	
 	@Mock
 	private Claims claims;
 	
-	@Autowired	
-	public JwtUtilTest(JwtUtil jwtUtil) {
-		this.jwtUtil = jwtUtil;
-	}
+	@Mock
+	private UserRepository userRepository;
 	
 	
 	@BeforeEach
@@ -55,14 +57,15 @@ public class JwtUtilTest {
 	}
 
 	@Test
-	@DisplayName("토큰 유효성 검사")
-	public void validateToken() {
+	@DisplayName("엑세스 토큰 유효성 검사")
+	public void validateAccessToken() {
 		// given
 		UserDTO userDTO = userDTOMaker();
 		String token = jwtUtil.generateAccessToken(userDTO);
 		
+		
 		// when
-		boolean isValid = jwtUtil.validateToken(token, "testNickName", "KAKAO");
+		boolean isValid = jwtUtil.validateAccessToken(token, "testNickName", "KAKAO");
 		
 		// then
 		assertTrue(isValid);

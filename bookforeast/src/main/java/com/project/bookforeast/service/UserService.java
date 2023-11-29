@@ -14,5 +14,6 @@ public interface UserService {
 
 	public UserDTO login(UserDTO userDTO);
 
-//	public User socialLogin(UserDTO userDTO);
+	public UserDTO getUserInfoByUsingRefreshToken(String refreshToken);
+
 }

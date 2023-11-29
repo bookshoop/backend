@@ -17,7 +17,7 @@ import lombok.ToString;
 @Builder
 public class CodeDTO {
 
-	private int codeId;
+	private Long codeId;
 	private String codename;
 	private int upperCodeId;
 	

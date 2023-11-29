@@ -27,10 +27,10 @@ public class RecommendForeast {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int recommendForeastId;
+	private Long recommendForeastId;
 	
 	private String title;
-	private int state;
+	private Long state;
 	private String address;
 
 	@OneToOne
@@ -41,8 +41,8 @@ public class RecommendForeast {
 	@JoinColumn(name = "main_image_id")
 	private FileGroup mainImageFileGroup;
 	
-	private int lat; // 위도
-	private int lng; // 경도
+	private Long lat; // 위도
+	private Long lng; // 경도
 	
 	@ManyToOne
 	@JoinColumn(name = "manager_id")

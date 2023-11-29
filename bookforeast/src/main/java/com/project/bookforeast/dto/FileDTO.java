@@ -18,7 +18,7 @@ import lombok.ToString;
 @Builder
 @ToString
 public class FileDTO {
-	private int fileId;
+	private Long fileId;
 	private FileGroupDTO fileGroupDTO;
 	private String path;
 	private String name;

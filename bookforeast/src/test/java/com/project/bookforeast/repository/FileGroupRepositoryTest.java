@@ -18,14 +18,8 @@ import com.project.bookforeast.entity.FileGroup;
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class FileGroupRepositoryTest {
 	
-	
-	private FileGroupRepository fileGroupRepository;
-	
-	
 	@Autowired
-	public FileGroupRepositoryTest(FileGroupRepository fileGroupRepository) {
-		this.fileGroupRepository = fileGroupRepository;
-	}
+	private FileGroupRepository fileGroupRepository;
 	
 
 	@Test

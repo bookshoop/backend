@@ -23,18 +23,15 @@ import com.project.bookforeast.entity.LikeGenre;
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class GenreRepositoryTest {
 
+	@Autowired
 	private GenreRepository genreRepository;
 	
-	@Autowired
-	public GenreRepositoryTest(GenreRepository genreRepository) {
-		this.genreRepository = genreRepository;
-	}
 	
 	@Test
 	@DisplayName("좋아하는 장르 목록 저장")
 	public void genreSaveAll() {
 		// given
-		List<Integer> likeGenreCodeIds = makeMockLikeGenres();
+		List<Long> likeGenreCodeIds = makeMockLikeGenres();
 		UserDTO userDTO = userDTOMaker();
 		final List<LikeGenre> likeGenres = likeGenreMakerList(likeGenreCodeIds, userDTO);
 		
@@ -45,11 +42,11 @@ public class GenreRepositoryTest {
 		assertThat(likeGenres.size()).isEqualTo(result.size());
 	}
 
-	private List<Integer> makeMockLikeGenres() {
-		List<Integer> likeGenres = new ArrayList<>();
-		likeGenres.add(2);
-		likeGenres.add(3);
-		likeGenres.add(4);
+	private List<Long> makeMockLikeGenres() {
+		List<Long> likeGenres = new ArrayList<>();
+		likeGenres.add(2L);
+		likeGenres.add(3L);
+		likeGenres.add(4L);
 		
 		return likeGenres;
 	}
@@ -67,10 +64,10 @@ public class GenreRepositoryTest {
 	}
 	
 	
-	private List<LikeGenre> likeGenreMakerList(List<Integer> likeGenreCodeIds, UserDTO userDTO) {
+	private List<LikeGenre> likeGenreMakerList(List<Long> likeGenreCodeIds, UserDTO userDTO) {
 		List<LikeGenre> likeGenres = new ArrayList<>();
 		
-		for(int likeGenreCodeId : likeGenreCodeIds) {
+		for(Long likeGenreCodeId : likeGenreCodeIds) {
 			CodeDTO codeDTO = new CodeDTO();
 			codeDTO.setCodeId(likeGenreCodeId);
 

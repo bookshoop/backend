@@ -10,6 +10,7 @@ import com.project.bookforeast.dto.UserDTO;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,18 +33,17 @@ public class User {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int userId;
+	private Long userId;
 	private String nickname;
 	private String mobile;
 	private String password;
 	private Date birthday;
 	
-	@OneToOne
+	@OneToOne(cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "access_route_id")
 	private Code code;
 	
 	private String accessRoute;
-	private String accessRouteId;
 	private String socialProvider;
 	private String socialId;
 	
@@ -61,6 +61,7 @@ public class User {
 	
 	private String role;
 	private String pushToken;
+	private String refreshToken;
 	
 	public UserDTO toDTO() {
 		
@@ -77,6 +78,7 @@ public class User {
 													.deleteDt(deleteDt)
 													.role(role)
 													.pushToken(pushToken)
+													.refreshToken(refreshToken)
 													; 
 		
 		if(code != null) {

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.project.bookforeast.entity.User;
 
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
 	public User findBySocialIdAndSocialProvider(String socialId, String socialProvider);
 	
@@ -15,4 +15,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	public User findByMobileAndSocialIdIsNull(String mobile);
 
 	public User findByMobileAndPassword(String mobile, String password);
+	
+	public User findByRefreshToken(String refreshToken);
+
+	public void deleteById(Long userId);
 }

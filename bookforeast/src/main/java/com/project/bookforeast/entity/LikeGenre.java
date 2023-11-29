@@ -25,7 +25,7 @@ public class LikeGenre {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int likeGenreId;;
+	private Long likeGenreId;;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id")

@@ -83,14 +83,14 @@ public class FileServiceImpl implements FileService {
 	}
 
 	
-	private String makeuploadFilePath(String contentName, int fileGroupId) {
+	private String makeuploadFilePath(String contentName, Long long1) {
 		String uploadDir;
 		if (networkService.isLocal()) {
 			uploadDir = "C:/bookforeastdownloadfile/";
 		} else {
 			uploadDir = "";
 		}
-		return uploadDir + "/" + contentName + "/" + fileGroupId;
+		return uploadDir + "/" + contentName + "/" + long1;
 	}
 
 	

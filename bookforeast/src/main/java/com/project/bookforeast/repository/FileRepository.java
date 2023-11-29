@@ -3,6 +3,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.project.bookforeast.entity.File;
 
-public interface FileRepository extends CrudRepository<File, Integer> {
+public interface FileRepository extends CrudRepository<File, Long> {
 
 }

@@ -7,14 +7,16 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.project.bookforeast.dto.UserDTO;
 import com.project.bookforeast.repository.GenreRepository;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class GenreServiceTest {
 
 	@InjectMocks
@@ -29,7 +31,7 @@ public class GenreServiceTest {
 	@DisplayName("장르 등록 성공")
 	public void GenreSaveSuccess() {
 		// given
-		List<Integer> likeGenres = makeMockLikeGenres();
+		List<Long> likeGenres = makeMockLikeGenres();
 		UserDTO userDTO = userDTOMaker();
 		
 		// when
@@ -41,11 +43,11 @@ public class GenreServiceTest {
 
 
 
-	private List<Integer> makeMockLikeGenres() {
-		List<Integer> likeGenres = new ArrayList<>();
-		likeGenres.add(2);
-		likeGenres.add(3);
-		likeGenres.add(4);
+	private List<Long> makeMockLikeGenres() {
+		List<Long> likeGenres = new ArrayList<>();
+		likeGenres.add(2L);
+		likeGenres.add(3L);
+		likeGenres.add(4L);
 		
 		return likeGenres;
 	}

@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		// userDTO 객체 안에 like genre가 있는 경우 like genre 저장 서비스 호출
-		List<Integer> likeGenreCodeIds = userDTO.getLikeGenres();
+		List<Long> likeGenreCodeIds = userDTO.getLikeGenres();
 		if(likeGenreCodeIds != null && likeGenreCodeIds.size() > 0) {
 			genreService.saveLikeGenres(user, likeGenreCodeIds);
 		}
@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		// userDTO 객체 안에 like genre가 있는 경우 like genre 저장 서비스 호출
-		List<Integer> likeGenreCodeIds = userDTO.getLikeGenres();
+		List<Long> likeGenreCodeIds = userDTO.getLikeGenres();
 		if(likeGenreCodeIds != null && likeGenreCodeIds.size() > 0) {
 			genreService.saveLikeGenres(user, likeGenreCodeIds);
 		}
@@ -292,7 +292,7 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		if(requestParam.get("accessRouteId") != null) {
-			int accessRouteId = (int) requestParam.get("accessRouteId");
+			Long accessRouteId = (Long) requestParam.get("accessRouteId");
 			CodeDTO codeDTO = new CodeDTO();
 			codeDTO.setCodeId(accessRouteId);
 			
@@ -312,7 +312,7 @@ public class UserServiceImpl implements UserService {
 			
 			ObjectMapper objectMapper = new ObjectMapper();
 			try {
-				List<Integer> likeGenreCodeList = objectMapper.readValue(likeGenreCodes, new TypeReference<List<Integer>>(){});
+				List<Long> likeGenreCodeList = objectMapper.readValue(likeGenreCodes, new TypeReference<List<Long>>(){});
 				userDTO.setLikeGenres(likeGenreCodeList);
 			} catch (JsonProcessingException e) {
 				new ParsingException(ParsingErrorResult.PARSING_FAIL);
@@ -322,6 +322,11 @@ public class UserServiceImpl implements UserService {
 		if(requestParam.get("pushToken") != null ) {
 			userDTO.setPushToken((String) requestParam.get("pushToken"));
 		}
+		
+		if(requestParam.get("refreshToken") != null ) {
+			userDTO.setPushToken((String) requestParam.get("refreshToken"));
+		}
+		
 		return userDTO;
 	}
 
@@ -372,6 +377,13 @@ public class UserServiceImpl implements UserService {
 			throw new UserException(UserErrorResult.PASSWORD_EMPTY);
 		}
 		
+	}
+
+
+	@Override
+	public UserDTO getUserInfoByUsingRefreshToken(String refreshToken) {
+		User user = userRepository.findByRefreshToken(refreshToken);	
+		return user.toDTO();
 	}
 
 

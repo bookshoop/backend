@@ -19,7 +19,7 @@ import lombok.ToString;
 @ToString
 public class LikeGenreDTO {
 
-	private int likeGenreId;
+	private Long likeGenreId;
 	private UserDTO userDTO;
 	private CodeDTO codeDTO;
 	

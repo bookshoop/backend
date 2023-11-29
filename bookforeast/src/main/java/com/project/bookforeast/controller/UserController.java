@@ -49,9 +49,16 @@ public class UserController {
 	public ResponseEntity<Map<String, String>> checkRefreshToken(HttpServletRequest request) {
 		String refreshToken = jwtUtil.extractTokenFromHeader(request);
 		// jwtutils에서 refreshtoken검증
+		jwtUtil.validateRefreshToken(refreshToken);
 		
-		return null;
+		// accessToken 발급
+		UserDTO userDTO = userService.getUserInfoByUsingRefreshToken(refreshToken);
+		Map<String, String> tokenMap = jwtUtil.refreshingAccessToken(userDTO, refreshToken);
+		return ResponseEntity.ok(tokenMap);
 	}
+	
+	
+	
 //	@PostMapping("/api/u/v1/users/signup")
 //	public ResponseEntity<Void> signup(@RequestParam Map<String, Object> requestParam, @RequestPart("profile") MultipartFile profile) {
 //		UserDTO userDTO = userService.getUserDataInParameter(requestParam);

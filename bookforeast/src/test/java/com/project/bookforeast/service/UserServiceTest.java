@@ -13,8 +13,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +28,7 @@ import com.project.bookforeast.error.UserException;
 import com.project.bookforeast.error.result.UserErrorResult;
 import com.project.bookforeast.repository.UserRepository;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
 	@InjectMocks
@@ -73,7 +75,7 @@ public class UserServiceTest {
 		// given
 		UserDTO userDTO = userDTOMaker();
 		MultipartFile mockFile = new MockMultipartFile("file1", "test1.txt", "text/plain", "testFile".getBytes());
-		List<Integer> likeGenres = makeMockLikeGenres();
+		List<Long> likeGenres = makeMockLikeGenres();
 		userDTO.setLikeGenres(likeGenres);
 		
 		doReturn(userDTO.toEntity()).when(userRepository).findByNickname(userDTO.getNickname());
@@ -349,11 +351,11 @@ public class UserServiceTest {
 		return userDTO;
 	}
 	
-	private List<Integer> makeMockLikeGenres() {
-		List<Integer> likeGenres = new ArrayList<>();
-		likeGenres.add(1);
-		likeGenres.add(2);
-		likeGenres.add(3);
+	private List<Long> makeMockLikeGenres() {
+		List<Long> likeGenres = new ArrayList<>();
+		likeGenres.add(1L);
+		likeGenres.add(2L);
+		likeGenres.add(3L);
 		
 		return likeGenres;
 	}

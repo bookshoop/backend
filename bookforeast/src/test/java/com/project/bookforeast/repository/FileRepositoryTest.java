@@ -21,13 +21,9 @@ import com.project.bookforeast.entity.FileGroup;
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class FileRepositoryTest {
 
-	
-	private FileRepository fileRepository;
-	
 	@Autowired
-	public FileRepositoryTest(FileRepository fileRepository) {
-		this.fileRepository = fileRepository;
-	}
+	private FileRepository fileRepository;
+
 	
 	@Test
 	@DisplayName("파일 목록 저장 성공")
