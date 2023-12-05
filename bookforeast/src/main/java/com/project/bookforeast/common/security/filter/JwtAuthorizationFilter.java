@@ -1,13 +1,13 @@
 package com.project.bookforeast.common.security.filter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.project.bookforeast.common.security.error.TokenErrorResult;
@@ -20,7 +20,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -60,4 +59,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 		
 		return false;
 	}
+	
+	@Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String[] excludePath = {
+                "/api-docs/json",
+                "/api-docs",
+                "/api/u/v1/social-login",
+                "/swagger-ui.html",
+                "/"
+        		};
+        String path = request.getRequestURI();
+        return Arrays.stream(excludePath).anyMatch(path::startsWith);
+    }
 }

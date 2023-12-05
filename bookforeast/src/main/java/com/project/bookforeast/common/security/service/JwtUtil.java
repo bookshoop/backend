@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.hibernate.grammars.hql.HqlParser.CaseOtherwiseContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -79,13 +80,38 @@ public class JwtUtil {
 	}
 	
 	
-	public Boolean validateAccessToken(String token, String socialId, String socialProvider) {
-		final String socialIdInToken = extractClaim(token, Claims::getSubject);
-		final String socialProviderInToken = extractClaim(token, Claims::getIssuer);
-		boolean isUser = socialIdInToken.equals(socialId)  && socialProviderInToken.equals(socialProvider);
-		boolean isTokenExpired = checkTokenExpired(token);
+	public UserDTO getUserInfoByUsingAccessToken(String accessToken) {
+		if(checkTokenExpired(accessToken)) {
+			throw new TokenException(TokenErrorResult.TOKEN_EXPIRED);
+		}
 		
-		return isUser && !isTokenExpired;
+		final String socialIdInToken = extractClaim(accessToken, Claims::getSubject);
+		final String socialProviderInToken = extractClaim(accessToken, Claims::getIssuer);
+		User user = userRepository.findBySocialIdAndSocialProvider(socialIdInToken, socialProviderInToken);
+		
+		if(user == null) {
+			throw new TokenException(TokenErrorResult.TOKEN_EXPIRED);
+		}
+		
+		return user.toDTO();
+	}
+	
+
+
+	public UserDTO getUserInfoByUsingRefreshToken(String refreshToken) {
+		User user = userRepository.findByRefreshToken(refreshToken);	
+		return user.toDTO();
+	}
+	
+	
+	public boolean validateAccessToken(String accessToken, String socialId, String socialProvider) {
+		String socialIdInToken = extractClaim(accessToken, Claims::getSubject);
+		String socialProviderInToken = extractClaim(accessToken, Claims::getIssuer);
+		
+		boolean isExpired = checkTokenExpired(accessToken);
+		boolean isUser = socialId.equals(socialIdInToken) && socialProvider.equals(socialProviderInToken);
+		
+		return !isExpired && isUser;
 	}
 	
 	
