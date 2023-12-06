@@ -1,6 +1,7 @@
 package com.project.bookforeast.common.security.service;
 
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,12 +64,11 @@ public class JwtUtil {
 		claims.put("sub", userDTO.getSocialId());
 		claims.put("iss", userDTO.getSocialProvider());
 		
-		String encodedSecretkey = Base64.getEncoder().encodeToString(SECRETKEY.getBytes());
 		return Jwts.builder()
 				.addClaims(claims)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + expirationPeriod))
-				.signWith(SignatureAlgorithm.HS256, encodedSecretkey)
+				.signWith(SignatureAlgorithm.HS256, SECRETKEY)
 				.compact();
 	}
 
@@ -119,12 +119,12 @@ public class JwtUtil {
 		User user = userRepository.findByRefreshToken(refreshToken);
 		
 		if(user == null) {
-			throw new TokenException(TokenErrorResult.TOKEN_EXPIRED);
+			new TokenException(TokenErrorResult.TOKEN_EXPIRED);
 		}
 		
 		String refreshTokenInDB = user.getRefreshToken(); 
-		if(!refreshToken.equals(refreshTokenInDB) || !checkTokenExpired(refreshTokenInDB)) {
-			throw new TokenException(TokenErrorResult.TOKEN_EXPIRED);
+		if(!refreshToken.equals(refreshTokenInDB) || checkTokenExpired(refreshTokenInDB)) {
+			new TokenException(TokenErrorResult.TOKEN_EXPIRED);
 		}
 		
 		return true;
@@ -173,7 +173,8 @@ public class JwtUtil {
 		String header = request.getHeader("Authorization");
 		if(StringUtils.hasText(header) && header.startsWith("Bearer ")) {
 			return header.substring(7);
+		} else {
+			throw new TokenException(TokenErrorResult.REFRESH_TOKEN_NEED);
 		}
-		return null;
 	}
 }

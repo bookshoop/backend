@@ -4,9 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-
 import com.project.bookforeast.code.dto.CodeDTO;
 import com.project.bookforeast.file.dto.FileGroupDTO;
 import com.project.bookforeast.user.entity.User;
@@ -30,16 +27,9 @@ import lombok.ToString;
 public class UserDTO {
 	
 	private Long userId;
-	
-	@NotNull
 	private String nickname;
-	
-	@NotNull
-	@Pattern(regexp = "^[0-9]\\d*$")
 	private String mobile;
-	
 	private String password;
-	
 	private Date birthday;
 	private CodeDTO codeDTO;
 	private String accessRoute;
@@ -112,5 +102,22 @@ public class UserDTO {
 
 			return entity;
 		}
+	}
+	
+	@Getter
+	@Setter
+	@Builder
+	public static class UserInfoDTO {
+		private Long userId;
+		private String nickname;
+		private String mobile;
+		private FileGroupDTO fileGroupDTO;
+		private Date birthday;
+		private int followerCount;
+		private int followingCount;
+		private int wishListCount;
+		private int readedBooksCount;
+		private int bookTreesCount;
+		private CodeDTO codeDTO;
 	}
 }

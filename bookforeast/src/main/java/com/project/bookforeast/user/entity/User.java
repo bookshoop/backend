@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import com.project.bookforeast.code.entity.Code;
 import com.project.bookforeast.file.entity.FileGroup;
 import com.project.bookforeast.user.dto.UserDTO;
+import com.project.bookforeast.user.dto.UserDTO.UserInfoDTO;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -95,5 +96,14 @@ public class User {
 		}
 		
 		return userDTOBuilder.build();				
+	}
+	
+	public UserDTO.UserInfoDTO toUserInfoDTO() {
+		UserDTO.UserInfoDTO.UserInfoDTOBuilder userInfoDTOBuilder = UserDTO.UserInfoDTO.builder();
+		
+		userInfoDTOBuilder.userId(userId)
+						  .nickname(nickname)
+						  .mobile(mobile)
+						  .birthday(birthday);
 	}
 }

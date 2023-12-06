@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.project.bookforeast.common.security.error.TokenErrorResult;
+import com.project.bookforeast.common.security.error.TokenException;
 import com.project.bookforeast.user.error.UserErrorResult;
 import com.project.bookforeast.user.error.UserException;
 
@@ -39,29 +41,32 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 										 
 		// 해당 에러메세지 로그를 찍는다.
 		log.warn("클라이언트로부터 잘못된 파라미터 전달됨 : {}", errorList);
-		return makeErrorResponseEntity(errorList.toString());
-		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), errorList.toString()));		
 	}
 
 	
 	// 사용자 정의 excepion이 발생한 경우
+	// userException
 	@ExceptionHandler({UserException.class})
-	public ResponseEntity<ErrorResponse> handleRestApiException(final UserException exception) {
+	public ResponseEntity<ErrorResponse> handleUserException(final UserException exception) {
 		log.warn("UserException occur:" + exception);
-		return this.makeErrorResponseEntity(exception.getUserErrorResult());
-	}
-	
-	
-	private ResponseEntity<Object> makeErrorResponseEntity(final String errorDescription) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-				.body(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), errorDescription));
-	}
-	
-	
-	private ResponseEntity<ErrorResponse> makeErrorResponseEntity(UserErrorResult errorResult) {
+		UserErrorResult errorResult = exception.getUserErrorResult();
 		return ResponseEntity.status(errorResult.getStatus())
-				.body(new ErrorResponse(errorResult.name(), errorResult.getMessage()));
+				.body(new ErrorResponse(errorResult.getStatus().toString(), errorResult.getMessage()));
+		
 	}
+	
+	// tokenException
+	@ExceptionHandler({TokenException.class})
+	public ResponseEntity<ErrorResponse> handleTokenException(final TokenException exception) {
+		log.warn("TokenException occur:" + exception);
+		TokenErrorResult errorResult = exception.getTokenErrorResult();
+		return ResponseEntity.status(errorResult.getStatus())
+				.body(new ErrorResponse(errorResult.getStatus().toString(), errorResult.getMessage()));
+	}
+	
+
 	
 	@RequiredArgsConstructor
 	@Getter
@@ -69,6 +74,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		private final String code;
 		private final String message;
 	}
+	
 }
 
 

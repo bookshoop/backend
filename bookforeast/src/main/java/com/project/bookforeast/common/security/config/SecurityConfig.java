@@ -13,11 +13,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.project.bookforeast.common.security.filter.JwtAuthorizationFilter;
 
 
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 	
 	JwtAuthorizationFilter jwtAuthorizationFilter;
+	
 	
 	@Autowired
 	public SecurityConfig(JwtAuthorizationFilter jwtAuthorizationFilter) {
@@ -34,8 +36,12 @@ public class SecurityConfig {
 									 "/api-docs", 
 									 "/api-docs/**",
 									 "/swagger-ui/**",
+									 "/api/u/v1/token",
 									 "/error"
-									).permitAll()
+								).permitAll()
+					.requestMatchers(
+						"/api/u/v1/user"	
+					).hasAnyRole("USER", "ADMIN")
 			)
 			.csrf(csrf -> {
 				csrf.disable();
@@ -43,7 +49,6 @@ public class SecurityConfig {
 			.cors(cors -> {
 				cors.disable();
 			})
-			
 			.httpBasic(Customizer.withDefaults())
 			.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
 			.logout(logout -> logout.logoutSuccessUrl("/").permitAll());
