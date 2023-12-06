@@ -11,6 +11,9 @@ import com.project.bookforeast.code.dto.CodeDTO;
 import com.project.bookforeast.file.dto.FileGroupDTO;
 import com.project.bookforeast.user.entity.User;
 
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -78,5 +81,36 @@ public class UserDTO {
 		User user = entity.build();
 		
 		return user;
+	}
+	
+	@Getter
+	@Setter
+	public static class SocialLoginDTO {
+		private String socialId;
+		@Hidden
+		private String socialProvider;
+		@Schema(requiredMode = RequiredMode.NOT_REQUIRED)
+		private String mobile;
+		@Schema(requiredMode = RequiredMode.NOT_REQUIRED)
+		private Date birthday;
+		private String pushToken;
+		@Hidden
+		private String role;
+		private String nickname;
+		
+		
+		public User toEntity() {
+			User entity = User.builder()
+							  .socialId(socialId)
+							  .socialProvider(socialProvider)
+							  .mobile(mobile)
+							  .birthday(birthday)
+							  .pushToken(pushToken)
+							  .role(role)
+							  .nickname(nickname)
+							  .build();
+
+			return entity;
+		}
 	}
 }

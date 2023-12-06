@@ -3,6 +3,7 @@ package com.project.bookforeast.user.entity;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -11,6 +12,7 @@ import com.project.bookforeast.file.entity.FileGroup;
 import com.project.bookforeast.user.dto.UserDTO;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -49,7 +51,8 @@ public class User {
 	private String socialProvider;
 	private String socialId;
 	
-	@CreatedDate
+	@CreationTimestamp
+	@Column(updatable = false)
 	private LocalDateTime registDt;
 	
 	@UpdateTimestamp

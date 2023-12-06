@@ -8,6 +8,7 @@ import com.project.bookforeast.common.security.role.UserRole;
 import com.project.bookforeast.file.service.FileService;
 import com.project.bookforeast.genre.service.GenreService;
 import com.project.bookforeast.user.dto.UserDTO;
+import com.project.bookforeast.user.dto.UserDTO.SocialLoginDTO;
 import com.project.bookforeast.user.entity.User;
 import com.project.bookforeast.user.error.UserErrorResult;
 import com.project.bookforeast.user.error.UserException;
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	
-	public UserDTO socialLogin(UserDTO userDTO) {
+	public UserDTO socialLogin(UserDTO.SocialLoginDTO userDTO) {
 		User findUser = findUserBySocialIdAndSocialProvider(userDTO);
 		
 		if(findUser == null) {
@@ -48,7 +49,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	
-	public User socialUserSave(UserDTO userDTO) {
+	public User socialUserSave(UserDTO.SocialLoginDTO userDTO) {
 		checkSocialUserSaveValid(userDTO);
 		
 		userDTO.setRole(UserRole.USER.getRole());
@@ -60,7 +61,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 
-	private void checkSocialUserSaveValid(UserDTO userDTO) {
+	private void checkSocialUserSaveValid(UserDTO.SocialLoginDTO userDTO) {
 		if(userDTO == null) {
 			throw new UserException(UserErrorResult.USEROBJECT_NOT_EXIST);
 		}
@@ -77,7 +78,7 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	
-	private boolean checkSocialLoginNessaryValueExist(UserDTO userDTO) {		
+	private boolean checkSocialLoginNessaryValueExist(UserDTO.SocialLoginDTO userDTO) {		
 		if(userDTO.getSocialId() == null || "".equals(userDTO.getSocialId())) {
 			return false;
 		}
@@ -90,7 +91,7 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	
-	private boolean checkSocialUserAlreadyExist(UserDTO userDTO) {
+	private boolean checkSocialUserAlreadyExist(UserDTO.SocialLoginDTO userDTO) {
 		String socialId = userDTO.getSocialId();
 		String socialProvider = userDTO.getSocialProvider();
 		
@@ -104,14 +105,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 
-	private void setDefaultNickname(UserDTO userDTO) {
+	private void setDefaultNickname(UserDTO.SocialLoginDTO userDTO) {
 		String nickname = nicknameService.createNickname();
 		userDTO.setNickname(nickname);
 	}
 
 
 	
-	public User findUserBySocialIdAndSocialProvider(UserDTO userDTO) {
+	public User findUserBySocialIdAndSocialProvider(UserDTO.SocialLoginDTO userDTO) {
 		String socialId = userDTO.getSocialId();
 		String socialProvider = userDTO.getSocialProvider();
 		User user = userRepository.findBySocialIdAndSocialProvider(socialId, socialProvider);

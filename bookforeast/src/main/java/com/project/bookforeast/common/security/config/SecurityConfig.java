@@ -33,7 +33,7 @@ public class SecurityConfig {
 									 "/api/u/v1/social-login",
 									 "/api-docs", 
 									 "/api-docs/**",
-									 "/swagger-ui.html",
+									 "/swagger-ui/**",
 									 "/error"
 									).permitAll()
 			)
@@ -55,7 +55,10 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/swagger-ui.html");
+        return (web) -> web.ignoring().requestMatchers(
+        											    "/favicon.ico",
+        											    "/swagger-ui/**"
+        											   );
     }
 
 }

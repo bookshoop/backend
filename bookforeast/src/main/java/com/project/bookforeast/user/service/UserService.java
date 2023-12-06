@@ -4,7 +4,8 @@ package com.project.bookforeast.user.service;
 import com.project.bookforeast.user.dto.UserDTO;
 
 public interface UserService {
-	public UserDTO socialLogin(UserDTO userDTO);
+	public UserDTO socialLogin(UserDTO.SocialLoginDTO userCreateDTO);
+
 
 //	public UserDTO getUserDataInParameter(Map<String, Object> requestParam);
 //

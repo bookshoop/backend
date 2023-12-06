@@ -4,7 +4,7 @@ import com.project.bookforeast.user.dto.UserDTO;
 
 public interface SecurityService {
 
-	public void saveUserInSecurityContext(UserDTO userDTO);
+	public void saveUserInSecurityContext(UserDTO.SocialLoginDTO socialLoginDTO);
 
 	public UserDTO getUserInfoInSecurityContext();
 }

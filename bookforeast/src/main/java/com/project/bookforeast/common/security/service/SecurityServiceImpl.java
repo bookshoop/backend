@@ -17,8 +17,9 @@ import com.project.bookforeast.user.dto.UserDTO;
 public class SecurityServiceImpl implements SecurityService {
 
 	@Override
-	public void saveUserInSecurityContext(UserDTO userDTO) {
-		Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(userDTO.getRole()));
+	public void saveUserInSecurityContext(UserDTO.SocialLoginDTO userDTO) {
+		String role = userDTO.getRole();
+		Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(role));
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDTO, null, authorities);
 		
 		if(authentication != null) {

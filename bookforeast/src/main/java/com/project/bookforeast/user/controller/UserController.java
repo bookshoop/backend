@@ -4,7 +4,10 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,10 +16,13 @@ import com.project.bookforeast.common.security.service.SecurityService;
 import com.project.bookforeast.user.dto.UserDTO;
 import com.project.bookforeast.user.service.UserService;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.servlet.http.HttpServletRequest;
 
 
 @RestController
+@RequestMapping("/api/u/v1")
 public class UserController {
 	
 	private final UserService userService;
@@ -30,13 +36,19 @@ public class UserController {
 	}
 	
 	
-	@PostMapping("/api/u/v1/social-login")
-	public ResponseEntity<Map<String, String>> socialLogin(@RequestParam UserDTO userDTO) {
+	@PostMapping("/social-login")
+	public ResponseEntity<Map<String, String>> socialLogin(@RequestBody UserDTO.SocialLoginDTO socialLoginDTO, 
+														   @Parameter(example = "KAKAO / NAVER / APPLE") @RequestParam String socialProvider) 
+	{
 
+		if(socialProvider != null && !"".equals(socialProvider)) {
+			socialLoginDTO.setSocialProvider(socialProvider);
+		}
+		
 		// 받아온 정보를 바당으로 db에 저장
-		UserDTO savedOrFindUser = userService.socialLogin(userDTO);
+		UserDTO savedOrFindUser = userService.socialLogin(socialLoginDTO);
 		// security처리
-		securityService.saveUserInSecurityContext(userDTO);
+		securityService.saveUserInSecurityContext(socialLoginDTO);
 		// 토큰 발급
 		Map<String, String> tokenMap = jwtUtil.initToken(savedOrFindUser);
 	
@@ -44,7 +56,7 @@ public class UserController {
 	}
 		
 	
-	@PostMapping("/api/u/v1/token")
+	@PostMapping("/token")
 	public ResponseEntity<Map<String, String>> checkRefreshToken(HttpServletRequest request) {
 		String refreshToken = jwtUtil.extractTokenFromHeader(request);
 		// jwtutils에서 refreshtoken검증
@@ -58,7 +70,7 @@ public class UserController {
 	
 	
 	
-	@GetMapping("/api/u/v1/user")
+	@GetMapping("/user")
 	public ResponseEntity<UserDTO> getUserInfo(HttpServletRequest request) {
 		String accessToken = jwtUtil.extractTokenFromHeader(request);
 		UserDTO userDTO = jwtUtil.getUserInfoByUsingAccessToken(accessToken);

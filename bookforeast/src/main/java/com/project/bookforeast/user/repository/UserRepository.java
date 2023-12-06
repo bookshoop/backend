@@ -15,7 +15,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	
 	public User findByNickname(String nickname);
 
-	@Query("SELECT u FROM User u WHERE u.nickname LIKE %:nickname%")
 	public List<User> findByNicknameContaining(String nickname);
 	
 	public User findByMobileAndSocialIdIsNull(String mobile);
