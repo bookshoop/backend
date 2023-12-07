@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.bookforeast.common.domain.service.NetworkService;
+import com.project.bookforeast.file.dto.FileDTO;
 import com.project.bookforeast.file.dto.FileGroupDTO;
 import com.project.bookforeast.file.entity.File;
 import com.project.bookforeast.file.entity.FileGroup;
@@ -38,17 +39,19 @@ public class FileServiceImpl implements FileService {
 			throw new FileException(FileErrorResult.EMPTY_FILE);
 		}
 
-		FileGroup fileGroup = new FileGroup();
+		FileGroupDTO fileGroupDTO = new FileGroupDTO();
+		FileGroup savedFileGroup = fileGroupRepository.save(fileGroupDTO.toEntity());
+		List<File> fileList = new ArrayList<>();
 		try {
 			for(MultipartFile file : files) {
-				File fileEntity = setFileFileEntity(file, contentName, fileGroup);
-				fileGroup.addFile(fileEntity);
-				uploadFilesInServer(fileEntity, file);
-				fileGroupRepository.save(fileGroup);
+				FileDTO fileDTO = setFileInfo(file, contentName, savedFileGroup);
+				uploadFilesInServer(fileDTO, file);
+				fileList.add(fileDTO.toEntity());
 			}		
+			fileRepository.saveAll(fileList);
 		} catch (IllegalStateException | IOException e) {
 			e.printStackTrace();
-			deleteFiles(fileGroup.getFileList());
+			deleteFiles(fileList);
 			new FileUploadException("File upload failed");
 
 		}
@@ -58,21 +61,21 @@ public class FileServiceImpl implements FileService {
 	}
 
 
-	private File setFileFileEntity(MultipartFile file, String contentName, FileGroup fileGroup) {
+	private FileDTO setFileInfo(MultipartFile file, String contentName, FileGroup savedFileGroup) {
 		String realName = file.getOriginalFilename();
 		String extension = getFileExtension(realName);
-		String path = makeuploadFilePath(contentName, fileGroup.getFilegroupId());
+		String path = makeuploadFilePath(contentName, savedFileGroup.getFilegroupId());
 		String name = makeFileName(extension);
 		String type = getFileType(name);
 
-		File fileEntity = new File();
-		fileEntity.setRealName(realName);
-		fileEntity.setExtension(extension);
-		fileEntity.setPath(path);
-		fileEntity.setName(name);
-		fileEntity.setType(type);
+		FileDTO fileDTO = new FileDTO();
+		fileDTO.setRealName(realName);
+		fileDTO.setExtension(extension);
+		fileDTO.setPath(path);
+		fileDTO.setName(name);
+		fileDTO.setType(type);
 	
-		return fileEntity;
+		return fileDTO;
 	} 
 
 
@@ -111,11 +114,11 @@ public class FileServiceImpl implements FileService {
 	}
 
 	
-	private void uploadFilesInServer(File fileInfo, MultipartFile file) throws IllegalStateException, IOException {
-		String path = fileInfo.getPath();
+	private void uploadFilesInServer(FileDTO fileDTO, MultipartFile file) throws IllegalStateException, IOException {
+		String path = fileDTO.getPath();
 		createDirIfNotExists(path);
 
-		String name = fileInfo.getName();
+		String name = fileDTO.getName();
 		java.io.File uploadFile = new java.io.File(path, name);
 		file.transferTo(uploadFile);
 	}

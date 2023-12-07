@@ -1,11 +1,10 @@
-package com.project.bookforeast.alert.entity;
+package com.project.bookforeast.library.entity;
 
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.project.bookforeast.alert.dto.AlertDTO;
-import com.project.bookforeast.user.entity.User;
+import com.project.bookforeast.library.dto.LibBookDTO;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -23,37 +22,37 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class Alert {
-	
+@NoArgsConstructor
+public class LibBook {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long alertId;
+	private Long libBookId;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "user_id")
-	private User user;
+	@JoinColumn(name = "library_id")
+	private Library library;
 	
-	private String category;
-	private String message;
+	private String bookId; 
+	private int userAdded;
 	
 	@CreationTimestamp
 	@Column(updatable = false)
 	private LocalDateTime registDt;
 	
 	
-	public AlertDTO toDTO() {
-		AlertDTO.AlertDTOBuilder alertDTOBuilder = AlertDTO.builder()
-													.alertId(alertId)
-													.category(category)
-													.message(message)
-													.registDt(registDt);
+	public LibBookDTO toDTO() {
+		LibBookDTO.LibBookDTOBuilder libBookDTOBuilder = LibBookDTO.builder()
+															.libBookId(libBookId)
+															.bookId(bookId)
+															.userAdded(userAdded)
+															.registDt(registDt);
 		
-		if(user != null) {
-			alertDTOBuilder.userDTO(user.toDTO());
+		if(library != null) {
+			libBookDTOBuilder.libraryDTO(library.toDTO());
 		}
 		
-		return alertDTOBuilder.build();
+		return libBookDTOBuilder.build();
 	}
 }

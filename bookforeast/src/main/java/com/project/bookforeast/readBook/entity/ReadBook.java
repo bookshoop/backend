@@ -1,10 +1,10 @@
-package com.project.bookforeast.follow.entity;
+package com.project.bookforeast.readBook.entity;
 
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.project.bookforeast.follow.dto.FollowDTO;
+import com.project.bookforeast.readBook.dto.ReadBookDTO;
 import com.project.bookforeast.user.entity.User;
 
 import jakarta.persistence.CascadeType;
@@ -22,39 +22,40 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class Follow {
+@AllArgsConstructor
+@NoArgsConstructor
+public class ReadBook {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int followId;
+	private Long readBookId;
+	
+	private String bookId; 
+	private int userAdded;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "following_id")
-	private User followingUser;
-	
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "follower_id")
-	private User followerUser;
+	@JoinColumn(name = "user_id")
+	private User registUser;
+	private int rate; // 별정
 	
 	@CreationTimestamp
 	@Column(updatable = false)
 	private LocalDateTime registDt;
 	
-	public FollowDTO toDTO() {
-		FollowDTO.FollowDTOBuilder followDTOBuilder = FollowDTO.builder()
-														.followId(followId);
+	
+	public ReadBookDTO toDTO() {
+		ReadBookDTO.ReadBookDTOBuilder readBookDTOBuilder = ReadBookDTO.builder()
+																.readBookId(readBookId)
+																.bookId(bookId)
+																.userAdded(userAdded)
+																.rate(rate)
+																.registDt(registDt);
 		
-		if(followingUser != null) {
-			followDTOBuilder.followingUserDTO(followingUser.toDTO());
+		if(registUser != null) {
+			readBookDTOBuilder.registUserDTO(registUser.toDTO());
 		}
 		
-		if(followerUser != null) {
-			followDTOBuilder.followerUserDTO(followerUser.toDTO());
-		}
-		
-		return followDTOBuilder.build();
+		return readBookDTOBuilder.build();
 	}
- }
+}

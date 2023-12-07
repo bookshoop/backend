@@ -26,17 +26,12 @@ public class FileGroupDTO {
 	List<FileDTO> fileList;
 	
 	
-	
 	public FileGroup toEntity() {
 		FileGroup entity = FileGroup.builder()
 							.filegroupId(filegroupId)
 							.fileList(new ArrayList<>())
 							.build();
 		
-		
-		if(registDt != null) {
-			entity.setRegistDt(registDt);
-		}
 		
 		if(fileList != null) {
 			for(FileDTO fileDTO : fileList) {

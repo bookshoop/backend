@@ -1,11 +1,11 @@
-package com.project.bookforeast.follow.entity;
+package com.project.bookforeast.wishList.entity;
 
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.project.bookforeast.follow.dto.FollowDTO;
 import com.project.bookforeast.user.entity.User;
+import com.project.bookforeast.wishList.dto.WishListDTO;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -22,39 +22,38 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Follow {
+public class WishList {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int followId;
+	private Long wishListId;
+	
+	private String bookId;
+	private int userAdded;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "following_id")
-	private User followingUser;
-	
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "follower_id")
-	private User followerUser;
+	@JoinColumn(name = "user_id")
+	private User registUser;
 	
 	@CreationTimestamp
 	@Column(updatable = false)
 	private LocalDateTime registDt;
 	
-	public FollowDTO toDTO() {
-		FollowDTO.FollowDTOBuilder followDTOBuilder = FollowDTO.builder()
-														.followId(followId);
+	
+	public WishListDTO toDTO() {
+		WishListDTO.WishListDTOBuilder wishListDTOBuilder = WishListDTO.builder()
+																.wishListId(wishListId)
+																.bookId(bookId)
+																.userAdded(userAdded)
+																.registDt(registDt);
 		
-		if(followingUser != null) {
-			followDTOBuilder.followingUserDTO(followingUser.toDTO());
+		if(registUser != null) {
+			wishListDTOBuilder.registUserDTO(registUser.toDTO());
 		}
 		
-		if(followerUser != null) {
-			followDTOBuilder.followerUserDTO(followerUser.toDTO());
-		}
-		
-		return followDTOBuilder.build();
+		return wishListDTOBuilder.build();
 	}
- }
+}

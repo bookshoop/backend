@@ -30,7 +30,6 @@ import lombok.Builder.Default;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

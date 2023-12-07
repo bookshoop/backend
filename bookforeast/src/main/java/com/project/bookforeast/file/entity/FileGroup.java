@@ -4,11 +4,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import com.project.bookforeast.file.dto.FileGroupDTO;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,7 +24,6 @@ import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -32,20 +33,12 @@ public class FileGroup {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long filegroupId;
 	
-	@CreatedDate
+	@CreationTimestamp
+	@Column(updatable = false)
 	private LocalDateTime registDt;
 	
 	@OneToMany(mappedBy = "fileGroup", cascade = CascadeType.ALL, orphanRemoval = true)
 	List<File> fileList = new ArrayList<>();
-	
-	
-	public void addFile(File file) {
-		this.fileList.add(file);
-		
-		if(file.getFileGroup() != this) {
-			file.takeFileGroup(this);
-		}
-	}
 	
 	
 	public FileGroupDTO toDTO() {

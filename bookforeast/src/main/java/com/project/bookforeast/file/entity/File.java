@@ -2,11 +2,14 @@ package com.project.bookforeast.file.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import com.project.bookforeast.file.dto.FileDTO;
 import com.project.bookforeast.file.dto.FileGroupDTO;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,7 +25,6 @@ import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -32,7 +34,7 @@ public class File {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long fileId;
 	
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "filegroup_id")
 	@Setter(AccessLevel.NONE)
 	private FileGroup fileGroup;
@@ -41,20 +43,13 @@ public class File {
 	private String name;
 	private String realName;
 	
-	@CreatedDate
+	@CreationTimestamp
+	@Column(updatable = false)
 	private LocalDateTime registDt;
 	private String type;
 	private String extension;
 	
 	
-	public void takeFileGroup(FileGroup fileGroup) {
-		
-		this.fileGroup = fileGroup;
-		
-		if(!fileGroup.getFileList().contains(this)) {
-			fileGroup.getFileList().add(this);			
-		}
-	}
 	
 	public FileDTO toDTO() {
 	

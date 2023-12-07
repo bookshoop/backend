@@ -1,13 +1,12 @@
-package com.project.bookforeast.alert.entity;
+package com.project.bookforeast.notice.entity;
 
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.project.bookforeast.alert.dto.AlertDTO;
+import com.project.bookforeast.notice.dto.NoticeDTO;
 import com.project.bookforeast.user.entity.User;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,35 +24,35 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Alert {
-	
+public class Notice {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long alertId;
+	private Long noticeId;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "user_id")
-	private User user;
+	private User registUser;
 	
-	private String category;
-	private String message;
+	private String title;
+	private String content;
 	
 	@CreationTimestamp
 	@Column(updatable = false)
 	private LocalDateTime registDt;
 	
-	
-	public AlertDTO toDTO() {
-		AlertDTO.AlertDTOBuilder alertDTOBuilder = AlertDTO.builder()
-													.alertId(alertId)
-													.category(category)
-													.message(message)
-													.registDt(registDt);
+
+	public NoticeDTO toDTO() {
+		NoticeDTO.NoticeDTOBuilder noticeDTOBuilder = NoticeDTO.builder()
+														.noticeId(noticeId)
+														.title(title)
+														.content(content)
+														.registDt(registDt);
 		
-		if(user != null) {
-			alertDTOBuilder.userDTO(user.toDTO());
+		if(registUser != null) {
+			noticeDTOBuilder.registUser(registUser.toDTO());
 		}
 		
-		return alertDTOBuilder.build();
+		return noticeDTOBuilder.build();
 	}
 }

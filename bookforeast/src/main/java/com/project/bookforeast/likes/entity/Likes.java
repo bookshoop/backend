@@ -1,10 +1,10 @@
-package com.project.bookforeast.follow.entity;
+package com.project.bookforeast.likes.entity;
 
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.project.bookforeast.follow.dto.FollowDTO;
+import com.project.bookforeast.likes.dto.LikesDTO;
 import com.project.bookforeast.user.entity.User;
 
 import jakarta.persistence.CascadeType;
@@ -22,39 +22,38 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Follow {
+public class Likes {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int followId;
+	private Long likesId;
+	private Long contentId;
+	private int contentType; // 0 책숲, 1 책나무
 	
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "following_id")
-	private User followingUser;
-	
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "follower_id")
-	private User followerUser;
+	@JoinColumn(name = "user_id")
+	private User registUser;
 	
 	@CreationTimestamp
 	@Column(updatable = false)
 	private LocalDateTime registDt;
 	
-	public FollowDTO toDTO() {
-		FollowDTO.FollowDTOBuilder followDTOBuilder = FollowDTO.builder()
-														.followId(followId);
+	
+	public LikesDTO toDTO() {
+		LikesDTO.LikesDTOBuilder likesDTOBuilder = LikesDTO.builder()
+														.likesId(likesId)
+														.contentId(contentId)
+														.contentType(contentType)
+														.registDt(registDt);
 		
-		if(followingUser != null) {
-			followDTOBuilder.followingUserDTO(followingUser.toDTO());
+		if(registUser != null) {
+			likesDTOBuilder.registUserDTO(registUser.toDTO());
 		}
 		
-		if(followerUser != null) {
-			followDTOBuilder.followerUserDTO(followerUser.toDTO());
-		}
-		
-		return followDTOBuilder.build();
+		return likesDTOBuilder.build();
 	}
- }
+	
+}

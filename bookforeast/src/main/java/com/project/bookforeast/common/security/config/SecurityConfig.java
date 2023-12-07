@@ -41,7 +41,7 @@ public class SecurityConfig {
 								).permitAll()
 					.requestMatchers(
 						"/api/u/v1/user"	
-					).hasAnyRole("USER", "ADMIN")
+					).hasAnyRole("USER", "MANAGER")
 			)
 			.csrf(csrf -> {
 				csrf.disable();
