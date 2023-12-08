@@ -42,7 +42,7 @@ public class GenreServiceImpl implements GenreService {
 			LikeGenreDTO likeGenreDTO = new LikeGenreDTO();
 			likeGenreDTO.setCodeDTO(codeDTO);
 			likeGenreDTO.setLikeGenreId(likeGenreCodeId);
-			likeGenreDTO.setUserDTO(user.toDTO());
+			likeGenreDTO.setRegistUserDTO(user.toDTO());
 			
 			LikeGenre likeGenre = likeGenreDTO.toEntity();
 			likeGenres.add(likeGenre);

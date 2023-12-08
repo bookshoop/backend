@@ -11,6 +11,9 @@ import com.project.bookforeast.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
@@ -26,12 +29,13 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Book {
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long bookId;
 	private int isbn;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "user_id")
-	@Column(updatable = false)
+	@JoinColumn(name = "user_id", updatable = false)
 	private User registUser;
 	
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

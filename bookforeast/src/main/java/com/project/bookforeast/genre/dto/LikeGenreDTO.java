@@ -22,7 +22,7 @@ import lombok.ToString;
 public class LikeGenreDTO {
 
 	private Long likeGenreId;
-	private UserDTO userDTO;
+	private UserDTO registUserDTO;
 	private CodeDTO codeDTO;
 	
 	
@@ -33,8 +33,8 @@ public class LikeGenreDTO {
 			entity.likeGenreId(likeGenreId);
 		}
 		
-		if(userDTO != null) {
-			entity.user(userDTO.toEntity());
+		if(registUserDTO != null) {
+			entity.registUser(registUserDTO.toEntity());
 		}
 		
 		if(codeDTO != null) {

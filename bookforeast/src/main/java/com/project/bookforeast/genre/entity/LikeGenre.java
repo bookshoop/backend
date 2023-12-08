@@ -2,6 +2,7 @@ package com.project.bookforeast.genre.entity;
 
 import com.project.bookforeast.code.entity.Code;
 import com.project.bookforeast.genre.dto.LikeGenreDTO;
+import com.project.bookforeast.genre.dto.SimpleLikeGenreDTO;
 import com.project.bookforeast.user.entity.User;
 
 import jakarta.persistence.CascadeType;
@@ -30,7 +31,7 @@ public class LikeGenre {
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id")
-	private User user;
+	private User registUser;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "genre_id")
@@ -38,20 +39,31 @@ public class LikeGenre {
 	
 	
 	public LikeGenreDTO toDTO() {
-		LikeGenreDTO.LikeGenreDTOBuilder dto = LikeGenreDTO.builder();
+		LikeGenreDTO.LikeGenreDTOBuilder likeGenreDTOBuilder = LikeGenreDTO.builder();
 		
 		if(likeGenreId != 0) {
-			dto.likeGenreId(likeGenreId);
+			likeGenreDTOBuilder.likeGenreId(likeGenreId);
 		}
 		
-		if(user != null) {
-			dto.userDTO(user.toDTO());
+		if(registUser != null) {
+			likeGenreDTOBuilder.registUserDTO(registUser.toDTO());
 		}
 		
 		if(code != null) {
-			dto.codeDTO(code.toDTO());
+			likeGenreDTOBuilder.codeDTO(code.toDTO());
 		}
 		
-		return dto.build();
+		return likeGenreDTOBuilder.build();
+	}
+	
+	public SimpleLikeGenreDTO toSimpleLikeGenreDTO() {
+		SimpleLikeGenreDTO.SimpleLikeGenreDTOBuilder simpleLikeGenreDTOBuilder = SimpleLikeGenreDTO.builder()
+																					.likeGenreId(likeGenreId);
+		
+		if(code != null) {
+			simpleLikeGenreDTOBuilder.name(code.getCodename());
+		}
+		
+		return simpleLikeGenreDTOBuilder.build();
 	}
 }

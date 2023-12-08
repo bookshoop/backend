@@ -49,8 +49,7 @@ public class BookForeast {
 	private int state;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
-	@Column(updatable = false)
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id", updatable = false)
 	private User registUser;
 	
 	@ManyToOne(cascade = CascadeType.MERGE)

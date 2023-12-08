@@ -41,7 +41,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 		if(checkAccessTokenValid(request)) {
 			return;
 		} else {
-			throw new TokenException(TokenErrorResult.REFRESH_TOKEN_NEED);
+			throw new TokenException(TokenErrorResult.TOKEN_NEED);
 		}
 	}
 
@@ -66,10 +66,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 "/api-docs/json",
                 "/api-docs",
                 "/api/u/v1/social-login",
-                "/swagger-ui.html",
-                "/"
+                "/swagger-ui.html"
         		};
         String path = request.getRequestURI();
-        return Arrays.stream(excludePath).anyMatch(path::startsWith);
+        
+        System.out.println(path);
+        System.out.println(Arrays.toString(excludePath));
+        boolean shouldNotFilter = Arrays.stream(excludePath).anyMatch(path::startsWith);
+        
+        return shouldNotFilter;
     }
 }

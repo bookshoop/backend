@@ -49,7 +49,6 @@ public class SecurityConfig {
 			.cors(cors -> {
 				cors.disable();
 			})
-			.httpBasic(Customizer.withDefaults())
 			.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
 			.logout(logout -> logout.logoutSuccessUrl("/").permitAll());
 			

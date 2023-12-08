@@ -1,14 +1,11 @@
 package com.project.bookforeast.common.security.service;
 
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.hibernate.grammars.hql.HqlParser.CaseOtherwiseContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,8 +15,6 @@ import com.project.bookforeast.common.security.error.TokenErrorResult;
 import com.project.bookforeast.common.security.error.TokenException;
 import com.project.bookforeast.user.dto.UserDTO;
 import com.project.bookforeast.user.entity.User;
-import com.project.bookforeast.user.error.UserErrorResult;
-import com.project.bookforeast.user.error.UserException;
 import com.project.bookforeast.user.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
@@ -174,7 +169,7 @@ public class JwtUtil {
 		if(StringUtils.hasText(header) && header.startsWith("Bearer ")) {
 			return header.substring(7);
 		} else {
-			throw new TokenException(TokenErrorResult.REFRESH_TOKEN_NEED);
+			throw new TokenException(TokenErrorResult.TOKEN_NEED);
 		}
 	}
 }

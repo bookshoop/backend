@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 public enum TokenErrorResult {
 
 	TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
-	REFRESH_TOKEN_NEED(HttpStatus.UNAUTHORIZED, "리프레쉬 토큰이 필요합니다."),
+	TOKEN_NEED(HttpStatus.UNAUTHORIZED, "토큰이 필요합니다."),
 	TOKEN_EMPTY(HttpStatus.UNAUTHORIZED, "토큰을 전달해주세요")
 	;
 	

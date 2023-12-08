@@ -7,11 +7,9 @@ import org.springframework.stereotype.Service;
 import com.project.bookforeast.common.security.role.UserRole;
 import com.project.bookforeast.file.service.FileService;
 import com.project.bookforeast.genre.service.GenreService;
+import com.project.bookforeast.user.dto.SocialLoginDTO;
 import com.project.bookforeast.user.dto.UserDTO;
-import com.project.bookforeast.user.dto.UserDTO.SocialLoginDTO;
 import com.project.bookforeast.user.entity.User;
-import com.project.bookforeast.user.error.UserErrorResult;
-import com.project.bookforeast.user.error.UserException;
 import com.project.bookforeast.user.repository.UserRepository;
 
 
@@ -38,7 +36,7 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	
-	public UserDTO socialLogin(UserDTO.SocialLoginDTO userDTO) {
+	public UserDTO socialLogin(SocialLoginDTO userDTO) {
 		User findUser = findUserBySocialIdAndSocialProvider(userDTO);
 		
 		if(findUser == null) {
@@ -48,10 +46,9 @@ public class UserServiceImpl implements UserService {
 		return findUser.toDTO();
 	}
 
-	
-	public User socialUserSave(UserDTO.SocialLoginDTO userDTO) {
-		checkSocialUserSaveValid(userDTO);
-		
+
+
+	public User socialUserSave(SocialLoginDTO userDTO) {
 		userDTO.setRole(UserRole.USER.getRole());
 		setDefaultNickname(userDTO);
 		
@@ -61,58 +58,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 
-	private void checkSocialUserSaveValid(UserDTO.SocialLoginDTO userDTO) {
-		if(userDTO == null) {
-			throw new UserException(UserErrorResult.USEROBJECT_NOT_EXIST);
-		}
-		
-		if(!checkSocialLoginNessaryValueExist(userDTO)) {
-			throw new UserException(UserErrorResult.NECESSARY_VALUE_NOTEXIST);
-		}
-		
-		
-		if(checkSocialUserAlreadyExist(userDTO)) {
-			throw new UserException(UserErrorResult.DUPLICATED_USER_REGISTER);
-		}
-		
-	}
-	
-	
-	private boolean checkSocialLoginNessaryValueExist(UserDTO.SocialLoginDTO userDTO) {		
-		if(userDTO.getSocialId() == null || "".equals(userDTO.getSocialId())) {
-			return false;
-		}
-		
-		if(userDTO.getSocialProvider() == null || "".equals(userDTO.getSocialProvider())) {
-			return false;
-		}
-		
-		return true;
-	}
-	
-	
-	private boolean checkSocialUserAlreadyExist(UserDTO.SocialLoginDTO userDTO) {
-		String socialId = userDTO.getSocialId();
-		String socialProvider = userDTO.getSocialProvider();
-		
-		User user = userRepository.findBySocialIdAndSocialProvider(socialId, socialProvider); 
-		
-		if(user != null) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 
-
-	private void setDefaultNickname(UserDTO.SocialLoginDTO userDTO) {
+	private void setDefaultNickname(SocialLoginDTO userDTO) {
 		String nickname = nicknameService.createNickname();
 		userDTO.setNickname(nickname);
 	}
 
 
 	
-	public User findUserBySocialIdAndSocialProvider(UserDTO.SocialLoginDTO userDTO) {
+	public User findUserBySocialIdAndSocialProvider(SocialLoginDTO userDTO) {
 		String socialId = userDTO.getSocialId();
 		String socialProvider = userDTO.getSocialProvider();
 		User user = userRepository.findBySocialIdAndSocialProvider(socialId, socialProvider);

@@ -54,8 +54,7 @@ public class RecommendForeast {
 	private int lng; // 경도
 	
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@Column(updatable = false)
-	@JoinColumn(name = "manager_id")
+	@JoinColumn(name = "manager_id", updatable = false)
 	private User managerUser;
 	
 	

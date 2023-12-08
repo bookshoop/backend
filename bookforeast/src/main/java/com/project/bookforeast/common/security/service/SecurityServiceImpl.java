@@ -11,13 +11,14 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.project.bookforeast.user.dto.SocialLoginDTO;
 import com.project.bookforeast.user.dto.UserDTO;
 
 @Service
 public class SecurityServiceImpl implements SecurityService {
 
 	@Override
-	public void saveUserInSecurityContext(UserDTO.SocialLoginDTO userDTO) {
+	public void saveUserInSecurityContext(SocialLoginDTO userDTO) {
 		String role = userDTO.getRole();
 		Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(role));
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDTO, null, authorities);

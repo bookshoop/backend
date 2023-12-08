@@ -1,32 +1,40 @@
 package com.project.bookforeast.user.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
+import com.project.bookforeast.bookTree.entity.BookTree;
 import com.project.bookforeast.code.entity.Code;
+import com.project.bookforeast.file.dto.ProfileDTO;
+import com.project.bookforeast.file.entity.File;
 import com.project.bookforeast.file.entity.FileGroup;
+import com.project.bookforeast.follow.entity.Follow;
+import com.project.bookforeast.genre.dto.LikeGenreDTO;
+import com.project.bookforeast.genre.dto.SimpleLikeGenreDTO;
+import com.project.bookforeast.genre.entity.LikeGenre;
+import com.project.bookforeast.readBook.entity.ReadBook;
 import com.project.bookforeast.user.dto.UserDTO;
-import com.project.bookforeast.user.dto.UserDTO.UserInfoDTO;
+import com.project.bookforeast.user.dto.UserInfoDTO;
+import com.project.bookforeast.wishList.entity.WishList;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.Builder.Default;
 
 @Entity
 @Getter
@@ -68,6 +76,24 @@ public class User {
 	private String pushToken;
 	private String refreshToken;
 	
+	@OneToMany(mappedBy = "followingUser")
+	private List<Follow> followingUserList;
+	
+	@OneToMany(mappedBy = "followerUser")
+	private List<Follow> followerUserList;
+	
+	@OneToMany(mappedBy = "registUser")
+	private List<WishList> wishLists;
+	
+	@OneToMany(mappedBy = "registUser")
+	private List<ReadBook> readBookList;
+	
+	@OneToMany(mappedBy = "registUser")
+	private List<BookTree> bookTreeList;
+	
+	@OneToMany(mappedBy = "registUser")
+	private List<LikeGenre> likeGenreList;
+	
 	public UserDTO toDTO() {
 		
 		UserDTO.UserDTOBuilder userDTOBuilder = UserDTO.builder()
@@ -97,12 +123,54 @@ public class User {
 		return userDTOBuilder.build();				
 	}
 	
-	public UserDTO.UserInfoDTO toUserInfoDTO() {
-		UserDTO.UserInfoDTO.UserInfoDTOBuilder userInfoDTOBuilder = UserDTO.UserInfoDTO.builder();
+	
+	public UserInfoDTO toUserInfoDTO() {
+		UserInfoDTO.UserInfoDTOBuilder userInfoDTOBuilder = UserInfoDTO.builder();
 		
 		userInfoDTOBuilder.userId(userId)
 						  .nickname(nickname)
 						  .mobile(mobile)
 						  .birthday(birthday);
+		
+		if(fileGroup != null) {
+			File file = fileGroup.getFileList().get(0);
+			ProfileDTO profile = new ProfileDTO();
+			profile.setFileId(file.getFileId());
+			profile.setExtension(file.getExtension());
+			profile.setPath(file.getPath() + "/" + file.getName());
+			userInfoDTOBuilder.profile(profile);
+		}
+		
+		if(followerUserList != null && followerUserList.size() > 0) {
+			userInfoDTOBuilder.followerCount(followerUserList.size());
+		}
+		
+		
+		if(followingUserList != null && followingUserList.size() > 0) {
+			userInfoDTOBuilder.followingCount(followingUserList.size());
+		}
+		
+		if(wishLists != null && wishLists.size() > 0) {
+			userInfoDTOBuilder.wishListCount(wishLists.size());
+		}
+		
+		if(readBookList != null && readBookList.size() > 0) {
+			userInfoDTOBuilder.readedBooksCount(readBookList.size());
+		}
+		
+		if(bookTreeList != null && bookTreeList.size() > 0) {
+			userInfoDTOBuilder.bookTreesCount(bookTreeList.size());
+		}
+		
+		if(likeGenreList != null && likeGenreList.size() > 0) {
+			List<SimpleLikeGenreDTO> likeGenreDTOList =  new ArrayList<>();
+			
+			likeGenreList.forEach((likeGenre) -> {
+				likeGenreDTOList.add(likeGenre.toSimpleLikeGenreDTO());
+			});
+			userInfoDTOBuilder.likeGenre(likeGenreDTOList);
+		}
+		
+		return userInfoDTOBuilder.build();
 	}
 }

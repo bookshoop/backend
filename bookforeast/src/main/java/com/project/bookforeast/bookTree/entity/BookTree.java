@@ -38,8 +38,7 @@ public class BookTree {
 	private int userAdded;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "user_id")
-	@Column(updatable = false)
+	@JoinColumn(name = "user_id", updatable = false)
 	private User registUser;
 	
 	@ManyToOne(cascade = CascadeType.MERGE)
