@@ -1,16 +1,33 @@
 package com.project.bookforeast.user.service;
 
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.project.bookforeast.code.dto.CodeDTO;
+import com.project.bookforeast.common.security.error.TokenErrorResult;
+import com.project.bookforeast.common.security.error.TokenException;
 import com.project.bookforeast.common.security.role.UserRole;
+import com.project.bookforeast.common.security.service.JwtUtil;
+import com.project.bookforeast.file.entity.FileGroup;
 import com.project.bookforeast.file.service.FileService;
+import com.project.bookforeast.genre.dto.LikeGenreDTO;
+import com.project.bookforeast.genre.entity.LikeGenre;
 import com.project.bookforeast.genre.service.GenreService;
+import com.project.bookforeast.readBook.dto.MonthlyReadDTO;
 import com.project.bookforeast.user.dto.SocialLoginDTO;
 import com.project.bookforeast.user.dto.UserDTO;
+import com.project.bookforeast.user.dto.UserInfoDTO;
+import com.project.bookforeast.user.dto.UserUpdDTO;
 import com.project.bookforeast.user.entity.User;
 import com.project.bookforeast.user.repository.UserRepository;
+
+import io.jsonwebtoken.Claims;
 
 
 @Service
@@ -20,19 +37,22 @@ public class UserServiceImpl implements UserService {
 	private final FileService fileService;
 	private final GenreService genreService;
 	private final NicknameService nicknameService;
+	private final JwtUtil jwtUtil;
 	
 	
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository, 
 						   FileService fileService, 
 						   GenreService genreService, 
-						   NicknameService nicknameService
+						   NicknameService nicknameService,
+						   JwtUtil jwtUtil
 						   ) 
 	{
 		this.userRepository = userRepository;
 		this.fileService = fileService;
 		this.genreService = genreService;
 		this.nicknameService = nicknameService;
+		this.jwtUtil = jwtUtil;
 	}
 	
 	
@@ -78,6 +98,98 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	
+	public UserInfoDTO getUserInfo(String accessToken) {
+		checkTokenExpired(accessToken);
+		User user = findBySocialIdAndSocialProvider(accessToken);
+		return user.toUserInfoDTO();
+	}
+
+
+	public UserDTO getUserInfoByUsingRefreshToken(String refreshToken) {
+		User user = userRepository.findByRefreshToken(refreshToken);	
+		return user.toDTO();
+	}
+
+
+	@Override
+	public MonthlyReadDTO getMonthlyReadInfo(String accessToken) {
+		checkTokenExpired(accessToken);
+		User user = findBySocialIdAndSocialProvider(accessToken);
+		return null;
+	}
+
+	
+	private void checkTokenExpired(String accessToken) {
+		if(jwtUtil.checkTokenExpired(accessToken)) {
+			throw new TokenException(TokenErrorResult.TOKEN_EXPIRED);
+		}
+	}
+	
+	public User findBySocialIdAndSocialProvider(String accessToken) {
+		final String socialIdInToken = jwtUtil.extractClaim(accessToken, Claims::getSubject);
+		final String socialProviderInToken = jwtUtil.extractClaim(accessToken, Claims::getIssuer);
+		User user = userRepository.findBySocialIdAndSocialProvider(socialIdInToken, socialProviderInToken);
+		
+		if(user == null) {
+			throw new TokenException(TokenErrorResult.TOKEN_EXPIRED);
+		}
+		
+		return user;
+	}
+
+
+	@Override
+	public void updUserInfo(String accessToken ,UserUpdDTO userUpdDTO) {
+		User user = findBySocialIdAndSocialProvider(accessToken);
+		
+		MultipartFile profile = userUpdDTO.getProfile();
+		String nickname = userUpdDTO.getNickname();
+		Date birthday = userUpdDTO.getBirthday();
+		List<Integer> likeGenreIdList = userUpdDTO.getLikeGenre();
+		String mobile = userUpdDTO.getMobile();
+		
+		if(profile != null && profile.getSize() > 0) {
+			FileGroup fileGroup = user.getFileGroup();
+			// 기존파일 서버에서 삭제
+			fileService.deleteFiles(fileGroup);
+			// 새로운파일 저장
+			fileService.fileUpload(profile, fileGroup, "userprofile");
+		}
+		
+		
+		if(nickname != null) {
+			user.setNickname(nickname);
+		}
+		
+		
+		if(birthday != null) {
+			user.setBirthday(birthday);
+		}
+		
+		if(likeGenreIdList != null && likeGenreIdList.size() > 0) {
+			List<LikeGenre> likeGenreList = new ArrayList<>();
+			for(int likeGenre : likeGenreIdList) {
+				LikeGenreDTO likeGenreDTO = new LikeGenreDTO();
+				likeGenreDTO.setRegistUserDTO(user.toDTO());
+
+				CodeDTO codeDTO = new CodeDTO();
+				codeDTO.setCodeId((long) likeGenre);
+				likeGenreDTO.setCodeDTO(codeDTO);
+				likeGenreList.add(likeGenreDTO.toEntity());
+			}
+			
+			user.setLikeGenreList(likeGenreList);
+		}
+		
+		if(mobile != null) {
+			user.setMobile(mobile);
+		}
+		
+		userRepository.save(user);
+	}
+	
+	
 	
 //	public UserDTO signUp(UserDTO userDTO, String contentName, MultipartFile proFile) {
 //		checkSignUpVaild(userDTO);

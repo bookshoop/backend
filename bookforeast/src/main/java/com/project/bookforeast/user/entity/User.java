@@ -17,6 +17,7 @@ import com.project.bookforeast.follow.entity.Follow;
 import com.project.bookforeast.genre.dto.LikeGenreDTO;
 import com.project.bookforeast.genre.dto.SimpleLikeGenreDTO;
 import com.project.bookforeast.genre.entity.LikeGenre;
+import com.project.bookforeast.readBook.dto.MonthlyReadDTO;
 import com.project.bookforeast.readBook.entity.ReadBook;
 import com.project.bookforeast.user.dto.UserDTO;
 import com.project.bookforeast.user.dto.UserInfoDTO;
@@ -35,9 +36,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -173,4 +176,5 @@ public class User {
 		
 		return userInfoDTOBuilder.build();
 	}
+	
 }

@@ -2,16 +2,16 @@ package com.project.bookforeast.user.dto;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotBlank;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.project.bookforeast.user.annotation.SocialProvider;
+import com.project.bookforeast.user.annotation.IsSocialProvider;
 import com.project.bookforeast.user.entity.User;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,10 +27,11 @@ import lombok.Setter;
 public class SocialLoginDTO {
 	
 	@Schema(requiredMode = RequiredMode.REQUIRED)
+	@NotBlank(message = "socialId는 빈 값일 수 없습니다.")
 	private String socialId;
 
 	@Schema(requiredMode = RequiredMode.REQUIRED, description = "KAKAO / NAVER / APPLE", example = "KAKAO")
-	@SocialProvider
+	@IsSocialProvider
 	private String socialProvider;
 	
 	@Schema(requiredMode = RequiredMode.NOT_REQUIRED, example = "01012345678")

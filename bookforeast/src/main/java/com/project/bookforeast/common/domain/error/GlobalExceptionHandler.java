@@ -42,7 +42,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		// 해당 에러메세지 로그를 찍는다.
 		log.warn("클라이언트로부터 잘못된 파라미터 전달됨 : {}", errorList);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-				.body(new ErrorResponse(HttpStatus.BAD_REQUEST.toString(), errorList.toString()));		
+				.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errorList.toString()));		
 	}
 
 	
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		log.warn("UserException occur:" + exception);
 		UserErrorResult errorResult = exception.getUserErrorResult();
 		return ResponseEntity.status(errorResult.getStatus())
-				.body(new ErrorResponse(errorResult.getStatus().toString(), errorResult.getMessage()));
+				.body(new ErrorResponse(errorResult.getStatus().value(), errorResult.getMessage()));
 		
 	}
 	
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		log.warn("TokenException occur:" + exception);
 		TokenErrorResult errorResult = exception.getTokenErrorResult();
 		return ResponseEntity.status(errorResult.getStatus())
-				.body(new ErrorResponse(errorResult.getStatus().toString(), errorResult.getMessage()));
+				.body(new ErrorResponse(errorResult.getStatus().value(), errorResult.getMessage()));
 	}
 	
 
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@RequiredArgsConstructor
 	@Getter
 	static class ErrorResponse {
-		private final String code;
+		private final int code;
 		private final String message;
 	}
 	

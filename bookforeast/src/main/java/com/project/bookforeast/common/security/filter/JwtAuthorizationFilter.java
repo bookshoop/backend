@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -16,6 +14,7 @@ import com.project.bookforeast.common.security.service.JwtUtil;
 import com.project.bookforeast.common.security.service.SecurityService;
 import com.project.bookforeast.user.dto.UserDTO;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,9 +38,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		
 		if(checkAccessTokenValid(request)) {
-			return;
+			filterChain.doFilter(request, response);
 		} else {
-			throw new TokenException(TokenErrorResult.TOKEN_NEED);
+			throw new RuntimeException("알 수 없는 오류가 발생했습니다.");
 		}
 	}
 
@@ -49,16 +48,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
 	private boolean checkAccessTokenValid(HttpServletRequest request) {
 		String accessToken = jwtUtil.extractTokenFromHeader(request);
-		UserDTO loginUser = securityService.getUserInfoInSecurityContext();
-		String socialId = loginUser.getSocialId();
-		String socialProvider = loginUser.getSocialProvider();
-		
-		if(accessToken != null && jwtUtil.validateAccessToken(accessToken, socialId, socialProvider)) {
-			return true;			
+		if(!jwtUtil.validateAccessToken(accessToken)) {
+			securityService.saveUserInSecurityContext(accessToken);
 		}
-		
-		return false;
+		return true;
 	}
+	
 	
 	@Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -66,7 +61,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 "/api-docs/json",
                 "/api-docs",
                 "/api/u/v1/social-login",
-                "/swagger-ui.html"
+                "/api/u/v1/token",
+                "/swagger-ui/",
+                "/swagger-config",
+                "/error"
         		};
         String path = request.getRequestURI();
         

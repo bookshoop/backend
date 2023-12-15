@@ -1,0 +1,57 @@
+openapi: 3.0.0
+info:
+  version: '1.0.0'
+  title: '책숲'
+  description: '책숲 프로젝트 api'
+paths:
+  /api/u/v1/social-login:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: socialLoginDTO
+          required: true
+          schema:
+            type: object
+            required:
+              - socialId
+              - socialProvider
+              - pushToken          
+            properties:
+              socialId:
+                type: string
+              socialProvider:
+                type: string
+                description: "KAKAO / NAVER / APPLE"
+                example: "KAKAO"
+              mobile:
+                type: string
+                example: "01012345678"
+              birthday:
+                type: date
+                description: "2023-12-08 / 20231208 두 형태 중 어떤걸로 줘도 상관없어"
+                example: '2023-12-08'
+              pushToken:
+                type: string                       
+      responses:
+        '200':
+          description: 소셜로그인 성공 시
+          content: 
+            application/json:
+              example:
+                accessToken: accessToken
+                refreshToken: refreshToken
+        '400':
+           $ref: '/swagger-response.yaml#/responses/BadRequestResponse'
+           
+                   
+tags:
+  - name: user
+    description: userapi
+
+components:
+  schemas:
+    SocialLoginDTO:
+      $ref: 'requestBodies/swagger-user.yaml#/components/schemas/SocialLoginDTO'
+  

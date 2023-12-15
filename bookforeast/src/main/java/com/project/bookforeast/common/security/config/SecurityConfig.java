@@ -37,7 +37,9 @@ public class SecurityConfig {
 									 "/api-docs/**",
 									 "/swagger-ui/**",
 									 "/api/u/v1/token",
-									 "/error"
+									 "/error",
+									 "/",
+									 "/swagger-config"
 								).permitAll()
 					.requestMatchers(
 						"/api/u/v1/user"	
@@ -61,7 +63,10 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(
         											    "/favicon.ico",
-        											    "/swagger-ui/**"
+        											    "/swagger-ui/**",
+        											    "/",
+        											    "/swagger-config",
+        											    "/error"
         											   );
     }
 

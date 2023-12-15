@@ -75,38 +75,18 @@ public class JwtUtil {
 	}
 	
 	
-	public UserDTO getUserInfoByUsingAccessToken(String accessToken) {
-		if(checkTokenExpired(accessToken)) {
-			throw new TokenException(TokenErrorResult.TOKEN_EXPIRED);
+	
+	public boolean validateAccessToken(String accessToken) {
+		if(accessToken == null || accessToken.length() <= 0) {
+			throw new TokenException(TokenErrorResult.ACCESS_TOKEN_NEED);
 		}
 		
-		final String socialIdInToken = extractClaim(accessToken, Claims::getSubject);
-		final String socialProviderInToken = extractClaim(accessToken, Claims::getIssuer);
-		User user = userRepository.findBySocialIdAndSocialProvider(socialIdInToken, socialProviderInToken);
-		
-		if(user == null) {
+		boolean isTokenExpired = checkTokenExpired(accessToken);
+		if(isTokenExpired == true) {
 			throw new TokenException(TokenErrorResult.TOKEN_EXPIRED);
+		} else {
+			return isTokenExpired;
 		}
-		
-		return user.toDTO();
-	}
-	
-
-
-	public UserDTO getUserInfoByUsingRefreshToken(String refreshToken) {
-		User user = userRepository.findByRefreshToken(refreshToken);	
-		return user.toDTO();
-	}
-	
-	
-	public boolean validateAccessToken(String accessToken, String socialId, String socialProvider) {
-		String socialIdInToken = extractClaim(accessToken, Claims::getSubject);
-		String socialProviderInToken = extractClaim(accessToken, Claims::getIssuer);
-		
-		boolean isExpired = checkTokenExpired(accessToken);
-		boolean isUser = socialId.equals(socialIdInToken) && socialProvider.equals(socialProviderInToken);
-		
-		return !isExpired && isUser;
 	}
 	
 	
@@ -126,9 +106,9 @@ public class JwtUtil {
 	}
 	
 	
-	private boolean checkTokenExpired(String token) {
+	public boolean checkTokenExpired(String token) {
 		Date expirationDate = extractClaim(token, Claims::getExpiration);
-		boolean isTokenExpired = expirationDate.before(new Date());
+		boolean isTokenExpired = expirationDate.after(new Date());
 		return isTokenExpired;
 	}
 
@@ -169,7 +149,7 @@ public class JwtUtil {
 		if(StringUtils.hasText(header) && header.startsWith("Bearer ")) {
 			return header.substring(7);
 		} else {
-			throw new TokenException(TokenErrorResult.TOKEN_NEED);
+			throw new TokenException(TokenErrorResult.ACCESS_TOKEN_NEED);
 		}
 	}
 }

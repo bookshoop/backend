@@ -16,7 +16,7 @@ import jakarta.validation.Constraint;
 @Constraint(validatedBy = SocialProviderValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SocialProvider {
+public @interface IsSocialProvider {
 
 	String message() default "지원하지 않는 socialProvider 입니다.";
 	Class<?>[] groups() default{};

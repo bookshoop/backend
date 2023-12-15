@@ -44,7 +44,7 @@ public class FileServiceImpl implements FileService {
 		List<File> fileList = new ArrayList<>();
 		try {
 			for(MultipartFile file : files) {
-				FileDTO fileDTO = setFileInfo(file, contentName, savedFileGroup);
+				FileDTO fileDTO = setFileInfo(file, savedFileGroup, contentName);
 				uploadFilesInServer(fileDTO, file);
 				fileList.add(fileDTO.toEntity());
 			}		
@@ -52,19 +52,56 @@ public class FileServiceImpl implements FileService {
 		} catch (IllegalStateException | IOException e) {
 			e.printStackTrace();
 			deleteFiles(fileList);
-			new FileUploadException("File upload failed");
+			deleteFolder(fileList.get(0).getPath());
+			throw new FileException(FileErrorResult.UPLOAD_FAIL);
 
 		}
 		
 		return true;
-
 	}
 
+	
+	@Override
+	@Transactional
+	public boolean fileUpload(MultipartFile file, String contentName) {
+		if(file == null) {
+			throw new FileException(FileErrorResult.EMPTY_FILE);
+		}
+		
+		FileGroupDTO fileGroupDTO = new FileGroupDTO();
+		return false;
+	}
+	
 
-	private FileDTO setFileInfo(MultipartFile file, String contentName, FileGroup savedFileGroup) {
+	@Override
+	@Transactional
+	public void fileUpload(MultipartFile file, FileGroup fileGroup, String contentName) {
+		boolean isFolderCreated = false;
+		if(fileGroup == null) {
+			FileGroupDTO fileGroupDTO = new FileGroupDTO();
+			fileGroup = fileGroupRepository.save(fileGroupDTO.toEntity());
+			isFolderCreated = true;
+		}
+		
+		FileDTO fileDTO = setFileInfo(file, fileGroup, contentName);
+		try {
+			uploadFilesInServer(fileDTO, file);
+			fileRepository.save(fileDTO.toEntity());
+		} catch (IllegalStateException | IOException e) {
+			e.printStackTrace();
+			deleteFiles(fileGroup);
+			if(isFolderCreated == true) {
+				deleteFolder(fileDTO.getPath());
+			}
+			throw new FileException(FileErrorResult.UPLOAD_FAIL);
+		}
+	}
+
+	
+	private FileDTO setFileInfo(MultipartFile file, FileGroup fileGroup, String contentName) {
 		String realName = file.getOriginalFilename();
 		String extension = getFileExtension(realName);
-		String path = makeuploadFilePath(contentName, savedFileGroup.getFilegroupId());
+		String path = makeuploadFilePath(contentName, fileGroup.getFilegroupId());
 		String name = makeFileName(extension);
 		String type = getFileType(name);
 
@@ -133,31 +170,46 @@ public class FileServiceImpl implements FileService {
 	}
 
 	
-	public void deleteFiles(List<File> fileInfos) {
-		if (fileInfos == null || fileInfos.isEmpty()) {
+	public void deleteFiles(List<File> fileList) {
+		if (fileList == null || fileList.isEmpty()) {
 			return;
 		}
-
-		for (File fileInfo : fileInfos) {
-			String path = fileInfo.getPath() + "/" + fileInfo.getName();
-			java.io.File fileToDelete = new java.io.File(path);
-
-			if (fileToDelete.exists() && fileToDelete.isFile()) {
-				fileToDelete.delete();
-			}
+		for (File file : fileList) {
+			deleteFile(file);
 		}
-
-		deleteFolder(fileInfos);
+	}
+	
+	
+	public void deleteFiles(FileGroup fileGroup) {
+		if(fileGroup == null) {
+			return;
+		}
+		
+		List<File> fileList = fileGroup.getFileList();
+		for(File file : fileList) {
+			deleteFile(file);
+		}
 	}
 
 	
-	private void deleteFolder(List<File> fileInfos) {
-		String folderPath = fileInfos.get(0).getPath();
+	public void deleteFile(File file) {
+		String path = file.getPath() + "/" + file.getName();
+		java.io.File fileToDelete = new java.io.File(path);
+
+		if (fileToDelete.exists() && fileToDelete.isFile()) {
+			fileToDelete.delete();
+		}
+	}
+
+	
+	private void deleteFolder(String folderPath) {
 		java.io.File folderToDelete = new java.io.File(folderPath);
 		java.io.File[] files = folderToDelete.listFiles();
 		if (files == null || files.length == 0) {
 			folderToDelete.delete();
 		}
 	}
+
+
 
 }

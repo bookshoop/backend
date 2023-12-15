@@ -1,0 +1,24 @@
+components:
+  schemas:
+    SocialLoginDTO:
+      type: object
+      properties:
+        socialId:
+          type: string
+        socialProvider:
+          type: string
+          description: "KAKAO / NAVER / APPLE"
+          example: "KAKAO"
+        mobile:
+          type: string
+          example: "01012345678"
+        birthday:
+          type: date
+          description: "2023-12-08 / 20231208 두 형태 중 어떤걸로 줘도 상관없어"
+          example: '2023-12-08'
+        pushToken:
+          type: string
+      required:
+        - socialId
+        - socialProvider
+        - pushToken

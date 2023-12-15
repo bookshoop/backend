@@ -4,14 +4,17 @@ package com.project.bookforeast.user.annotation.validator;
 import java.util.Arrays;
 import java.util.List;
 
-import com.project.bookforeast.user.annotation.SocialProvider;
+import com.project.bookforeast.common.domain.promise.SocialProvider;
+import com.project.bookforeast.user.annotation.IsSocialProvider;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class SocialProviderValidator implements ConstraintValidator<SocialProvider, String> {
-
-	private static final List<String> ALLOWED_PROVIDERS = Arrays.asList("KAKAO", "NAVER", "APPLE");
+public class SocialProviderValidator implements ConstraintValidator<IsSocialProvider, String> {
+	String kakao = SocialProvider.KAKAO.getProvider();
+	String naver = SocialProvider.NAVER.getProvider();
+	String apple = SocialProvider.APPLE.getProvider();
+	private List<String> ALLOWED_PROVIDERS = Arrays.asList(kakao, naver, apple);
 	
 	
 	@Override
