@@ -1,3 +1,5 @@
+
+
 package com.project.bookforeast.user.dto;
 
 import java.util.Date;
@@ -14,11 +16,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class UserInfoDTO {
-	private Long userId;
+public class DetailUserInfoDTO {
+	private Long id;
 	private String nickname;
 	private String mobile;
 	private ProfileDTO profile;

@@ -14,9 +14,9 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInfoListDTO {
+public class UserInfosDTO {
 
-	private List<UserInfoDTO> content;
+	private List<SimpleUserInfoDTO> content;
 	
 	@Schema(description = "다음데이터 있는지")
 	private boolean hasMore;

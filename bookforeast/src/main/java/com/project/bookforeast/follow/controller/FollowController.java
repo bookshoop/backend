@@ -1,29 +1,43 @@
 package com.project.bookforeast.follow.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.bookforeast.common.domain.dto.PagingInfoDTO;
-import com.project.bookforeast.common.domain.dto.SearchDTO;
-import com.project.bookforeast.follow.dto.MyFollowInfoDTO;
+import com.project.bookforeast.common.security.service.JwtUtil;
+import com.project.bookforeast.follow.dto.FollowInfosDTO;
+import com.project.bookforeast.follow.service.FollowService;
 import com.project.bookforeast.readBook.dto.ReadStatsDTO;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/u/v1")
-public class FollowingController {
+public class FollowController {
+	
+	
+	private final FollowService followService;
+	private final JwtUtil jwtUtil;
+	
+	@Autowired
+	public FollowController(FollowService followService, JwtUtil jwtUtil) {
+		this.followService = followService;
+		this.jwtUtil =  jwtUtil;
+	}
+	
+	
 	@SecurityRequirement(name = "Bearer Authenticaion")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", 
@@ -37,8 +51,12 @@ public class FollowingController {
 						 content = @Content(schema = @Schema(implementation = ReadStatsDTO.class))),			
 	})
 	@GetMapping("/user/follower")
-	public ResponseEntity<MyFollowInfoDTO> getUserMyFollowerInfos(@RequestBody @Valid PagingInfoDTO pagingInfoDTO) {
-		return ResponseEntity.ok(null);
+	public ResponseEntity<FollowInfosDTO> getMyFollowerInfos(@Schema(requiredMode = RequiredMode.NOT_REQUIRED, defaultValue = "10") @RequestParam(defaultValue = "10") int itemSize, 
+			 												 @Schema(requiredMode = RequiredMode.NOT_REQUIRED, description = "없을경우 첫페이지야") @RequestParam String cursor,
+			 												 HttpServletRequest request) {
+		String accessToken = jwtUtil.extractTokenFromHeader(request);
+		FollowInfosDTO followerInfosDTO = followService.getMyFollowerInfos(accessToken, itemSize, cursor);
+		return ResponseEntity.ok(followerInfosDTO);
 	}
 	
 	
@@ -55,8 +73,12 @@ public class FollowingController {
 						 content = @Content(schema = @Schema(implementation = ReadStatsDTO.class))),			
 	})
 	@GetMapping("/user/following")
-	public ResponseEntity<MyFollowInfoDTO> getUserMyFollowingInfos(@RequestBody @Valid PagingInfoDTO pagingInfoDTO) {
-		return ResponseEntity.ok(null);
+	public ResponseEntity<FollowInfosDTO> getMyFollowingInfos(@Schema(requiredMode = RequiredMode.NOT_REQUIRED, defaultValue = "10") @RequestParam(defaultValue = "10") int itemSize, 
+     		 												  @Schema(requiredMode = RequiredMode.NOT_REQUIRED, description = "없을경우 첫페이지야") @RequestParam String cursor,
+     		 												  HttpServletRequest request) {
+		String accessToken = jwtUtil.extractTokenFromHeader(request);
+		FollowInfosDTO followingInfosDTO = followService.getMyFollowingInfos(accessToken, itemSize, cursor);
+		return ResponseEntity.ok(followingInfosDTO);
 	}
 	
 	

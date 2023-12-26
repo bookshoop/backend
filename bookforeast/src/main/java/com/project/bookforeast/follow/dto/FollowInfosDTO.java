@@ -14,7 +14,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MyFollowInfoDTO {
+public class FollowInfosDTO {
 	List<SimpleFollowDTO> content;
 	
 	@Schema(description = "다음데이터 있는지")

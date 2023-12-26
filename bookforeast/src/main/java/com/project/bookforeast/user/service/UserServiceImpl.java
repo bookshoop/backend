@@ -4,8 +4,13 @@ package com.project.bookforeast.user.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,9 +25,12 @@ import com.project.bookforeast.genre.dto.LikeGenreDTO;
 import com.project.bookforeast.genre.entity.LikeGenre;
 import com.project.bookforeast.genre.service.GenreService;
 import com.project.bookforeast.readBook.dto.MonthlyReadDTO;
+import com.project.bookforeast.user.dto.DetailUserInfoDTO;
+import com.project.bookforeast.user.dto.SimpleUserInfoDTO;
+import com.project.bookforeast.user.dto.SimpleUserInfoInterface;
 import com.project.bookforeast.user.dto.SocialLoginDTO;
 import com.project.bookforeast.user.dto.UserDTO;
-import com.project.bookforeast.user.dto.UserInfoDTO;
+import com.project.bookforeast.user.dto.UserInfosDTO;
 import com.project.bookforeast.user.dto.UserUpdDTO;
 import com.project.bookforeast.user.entity.User;
 import com.project.bookforeast.user.repository.UserRepository;
@@ -99,10 +107,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	
-	public UserInfoDTO getUserInfo(String accessToken) {
+	public DetailUserInfoDTO getUserInfo(String accessToken) {
 		checkTokenExpired(accessToken);
 		User user = findBySocialIdAndSocialProvider(accessToken);
-		return user.toUserInfoDTO();
+		return user.toDetailUserInfoDTO();
 	}
 
 
@@ -126,17 +134,6 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 	
-	public User findBySocialIdAndSocialProvider(String accessToken) {
-		final String socialIdInToken = jwtUtil.extractClaim(accessToken, Claims::getSubject);
-		final String socialProviderInToken = jwtUtil.extractClaim(accessToken, Claims::getIssuer);
-		User user = userRepository.findBySocialIdAndSocialProvider(socialIdInToken, socialProviderInToken);
-		
-		if(user == null) {
-			throw new TokenException(TokenErrorResult.TOKEN_EXPIRED);
-		}
-		
-		return user;
-	}
 
 
 	@Override
@@ -188,6 +185,54 @@ public class UserServiceImpl implements UserService {
 		
 		userRepository.save(user);
 	}
+
+
+	public User findBySocialIdAndSocialProvider(String accessToken) {
+		final String socialIdInToken = jwtUtil.extractClaim(accessToken, Claims::getSubject);
+		final String socialProviderInToken = jwtUtil.extractClaim(accessToken, Claims::getIssuer);
+		User user = userRepository.findBySocialIdAndSocialProvider(socialIdInToken, socialProviderInToken);
+		
+		if(user == null) {
+			throw new TokenException(TokenErrorResult.TOKEN_EXPIRED);
+		}
+		
+		return user;
+	}
+	
+	
+	@Override
+	public UserInfosDTO getUserInfos(String accessToken, int itemSize, String cursor, String searchValue) {
+		User user = findBySocialIdAndSocialProvider(accessToken);
+		UserInfosDTO userInfosDTO = new UserInfosDTO();
+		Pageable page = PageRequest.of(0, itemSize);
+		Page<SimpleUserInfoInterface> pagingUsers = null;
+		List<SimpleUserInfoDTO> users = null;
+		Boolean isCursorNotEmpty = cursor != null && !cursor.equals("");
+		Boolean isSearchValueNotEmpty = searchValue != null && !searchValue.equals("");
+		
+
+		if(isCursorNotEmpty) {
+			if(isSearchValueNotEmpty) {
+				pagingUsers = userRepository.findEntitiesByCursorAndSearchValue(cursor, searchValue, user.getUserId(), page);
+			} else {
+				pagingUsers = userRepository.findEntitiesByCursor(cursor, user.getUserId(), page);
+			}
+		} else {
+			if(isSearchValueNotEmpty) {
+				pagingUsers = userRepository.findEntitiesBySearchValue(searchValue, user.getUserId(), page);
+			} else {
+				pagingUsers = userRepository.findEntities(user.getUserId(), page);
+			}
+		}
+		
+		users = pagingUsers.getContent().stream().map(SimpleUserInfoInterface::toSimpleUserInfoDTO).collect(Collectors.toList());
+
+		userInfosDTO.setContent(users);
+		userInfosDTO.setHasMore(pagingUsers.hasNext());
+		return userInfosDTO;
+	}
+
+
 	
 	
 	

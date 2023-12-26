@@ -108,7 +108,7 @@ public class JwtUtil {
 	
 	public boolean checkTokenExpired(String token) {
 		Date expirationDate = extractClaim(token, Claims::getExpiration);
-		boolean isTokenExpired = expirationDate.after(new Date());
+		boolean isTokenExpired = expirationDate.before(new Date());
 		return isTokenExpired;
 	}
 
@@ -146,7 +146,7 @@ public class JwtUtil {
 	
 	public String extractTokenFromHeader(HttpServletRequest request) {
 		String header = request.getHeader("Authorization");
-		if(StringUtils.hasText(header) && header.startsWith("Bearer ")) {
+		if(header != null && StringUtils.hasText(header) && header.startsWith("Bearer ")) {
 			return header.substring(7);
 		} else {
 			throw new TokenException(TokenErrorResult.ACCESS_TOKEN_NEED);

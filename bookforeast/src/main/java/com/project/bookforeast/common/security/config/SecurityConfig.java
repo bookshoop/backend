@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.project.bookforeast.common.domain.error.ExceptionHandlerFilter;
 import com.project.bookforeast.common.security.filter.JwtAuthorizationFilter;
 
 
@@ -20,10 +21,13 @@ public class SecurityConfig {
 	
 	JwtAuthorizationFilter jwtAuthorizationFilter;
 	
+
+	ExceptionHandlerFilter exceptionHandlerFilter;
 	
 	@Autowired
-	public SecurityConfig(JwtAuthorizationFilter jwtAuthorizationFilter) {
+	public SecurityConfig(JwtAuthorizationFilter jwtAuthorizationFilter, ExceptionHandlerFilter exceptionHandlerFilter) {
 		this.jwtAuthorizationFilter = jwtAuthorizationFilter;
+		this.exceptionHandlerFilter = exceptionHandlerFilter;
 	}
 	
 	@Bean
@@ -42,7 +46,7 @@ public class SecurityConfig {
 									 "/swagger-config"
 								).permitAll()
 					.requestMatchers(
-						"/api/u/v1/user"	
+						"/api/u/v1/**"	
 					).hasAnyRole("USER", "MANAGER")
 			)
 			.csrf(csrf -> {
@@ -52,6 +56,7 @@ public class SecurityConfig {
 				cors.disable();
 			})
 			.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(exceptionHandlerFilter, JwtAuthorizationFilter.class)
 			.logout(logout -> logout.logoutSuccessUrl("/").permitAll());
 			
 		

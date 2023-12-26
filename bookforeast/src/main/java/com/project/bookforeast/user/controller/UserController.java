@@ -1,4 +1,4 @@
-package com.project.bookforeast.readBook.dto;
+package com.project.bookforeast.user.controller;
 
 
 import org.springframework.http.ResponseEntity;
@@ -6,18 +6,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.bookforeast.common.domain.dto.PagingInfoDTO;
 import com.project.bookforeast.common.domain.dto.SearchDTO;
 import com.project.bookforeast.common.security.service.JwtUtil;
-import com.project.bookforeast.user.dto.UserInfoDTO;
-import com.project.bookforeast.user.dto.UserInfoListDTO;
+import com.project.bookforeast.user.dto.DetailUserInfoDTO;
+import com.project.bookforeast.user.dto.UserInfosDTO;
 import com.project.bookforeast.user.dto.UserUpdDTO;
 import com.project.bookforeast.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -46,11 +49,11 @@ public class UserController {
 						 content = @Content(schema = @Schema(example = "{\"code\" : \"401 UNAUTHORIZED\", \"message\" : \"message\"}"))),
 			@ApiResponse(responseCode = "200",
 						 description = "유저 정보 가져오기 성공",
-						 content = @Content(schema = @Schema(implementation = UserInfoDTO.class))),
+						 content = @Content(schema = @Schema(implementation = DetailUserInfoDTO.class))),
 	})
-	public ResponseEntity<UserInfoDTO> getUserInfo(HttpServletRequest request) {
+	public ResponseEntity<DetailUserInfoDTO> getUserInfo(HttpServletRequest request) {
 		String accessToken = jwtUtil.extractTokenFromHeader(request);
-		UserInfoDTO userInfoDTO = userService.getUserInfo(accessToken);
+		DetailUserInfoDTO userInfoDTO = userService.getUserInfo(accessToken);
 		return ResponseEntity.ok(userInfoDTO);
 	}
 	
@@ -79,17 +82,23 @@ public class UserController {
 	}
 	
 	
+	@SecurityRequirement(name = "Bearer Authentication")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", 
-				     description = "2. 파라미터가 부적절한 값일 때", 
-				     content = @Content(schema = @Schema(example = "{\"code\" : \"400\", \"message\" : \"message\"}"))),	
+				     	 description = "2. 파라미터가 부적절한 값일 때", 
+				     	 content = @Content(schema = @Schema(example = "{\"code\" : \"400\", \"message\" : \"message\"}"))),	
 			@ApiResponse(responseCode = "200",
 						 description = "유저 목록 가져오기 성공",
-						 content = @Content(schema = @Schema(implementation = UserInfoListDTO.class))),			
+						 content = @Content(schema = @Schema(implementation = UserInfosDTO.class))),			
 	})
 	@GetMapping("/users")
-	public ResponseEntity<UserInfoListDTO> getUserInfos(@RequestBody @Valid PagingInfoDTO paginationDTO, @RequestBody @Valid SearchDTO searchDTO) {
-		return ResponseEntity.ok(null);
+	public ResponseEntity<UserInfosDTO> getUserInfos(@Schema(defaultValue = "10") @RequestParam(defaultValue = "10", required = false) int itemSize, 
+													 @Schema(description = "없을경우 첫페이지야") @RequestParam(required = false) String cursor, 
+													 @RequestParam(required = false) String searchValue,
+													 HttpServletRequest request) {
+		String accessToken = jwtUtil.extractTokenFromHeader(request);
+		UserInfosDTO userInfosDTO = userService.getUserInfos(accessToken, itemSize, cursor, searchValue);
+		return ResponseEntity.ok(userInfosDTO);
 	}
 	
 	

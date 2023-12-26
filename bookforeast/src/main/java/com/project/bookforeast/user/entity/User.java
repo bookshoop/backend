@@ -14,13 +14,12 @@ import com.project.bookforeast.file.dto.ProfileDTO;
 import com.project.bookforeast.file.entity.File;
 import com.project.bookforeast.file.entity.FileGroup;
 import com.project.bookforeast.follow.entity.Follow;
-import com.project.bookforeast.genre.dto.LikeGenreDTO;
 import com.project.bookforeast.genre.dto.SimpleLikeGenreDTO;
 import com.project.bookforeast.genre.entity.LikeGenre;
-import com.project.bookforeast.readBook.dto.MonthlyReadDTO;
 import com.project.bookforeast.readBook.entity.ReadBook;
+import com.project.bookforeast.user.dto.DetailUserInfoDTO;
+import com.project.bookforeast.user.dto.SimpleUserInfoInterface;
 import com.project.bookforeast.user.dto.UserDTO;
-import com.project.bookforeast.user.dto.UserInfoDTO;
 import com.project.bookforeast.wishList.entity.WishList;
 
 import jakarta.persistence.CascadeType;
@@ -99,38 +98,38 @@ public class User {
 	
 	public UserDTO toDTO() {
 		
-		UserDTO.UserDTOBuilder userDTOBuilder = UserDTO.builder()
-													.userId(userId)
-													.nickname(nickname)
-													.mobile(mobile)
-													.password(password)
-													.birthday(birthday)													
-													.socialProvider(socialProvider)
-													.socialId(socialId)
-													.registDt(registDt)
-													.updateDt(updateDt)
-													.deleteDt(deleteDt)
-													.role(role)
-													.pushToken(pushToken)
-													.refreshToken(refreshToken)
-													; 
-		
+		UserDTO.UserDTOBuilder builder = UserDTO.builder()
+												.userId(userId)
+												.nickname(nickname)
+												.mobile(mobile)
+												.password(password)
+												.birthday(birthday)													
+												.socialProvider(socialProvider)
+												.socialId(socialId)
+												.registDt(registDt)
+												.updateDt(updateDt)
+												.deleteDt(deleteDt)
+												.role(role)
+												.pushToken(pushToken)
+												.refreshToken(refreshToken)
+												; 
+	
 		if(code != null) {
-			userDTOBuilder.codeDTO(code.toDTO());
+			builder.codeDTO(code.toDTO());
 		}
 		
 		if(fileGroup != null) {
-			userDTOBuilder.fileGroupDTO(fileGroup.toDTO());
+			builder.fileGroupDTO(fileGroup.toDTO());
 		}
 		
-		return userDTOBuilder.build();				
+		return builder.build();				
 	}
 	
 	
-	public UserInfoDTO toUserInfoDTO() {
-		UserInfoDTO.UserInfoDTOBuilder userInfoDTOBuilder = UserInfoDTO.builder();
+	public DetailUserInfoDTO toDetailUserInfoDTO() {
+		DetailUserInfoDTO.DetailUserInfoDTOBuilder builder = DetailUserInfoDTO.builder();
 		
-		userInfoDTOBuilder.userId(userId)
+		builder.id(userId)
 						  .nickname(nickname)
 						  .mobile(mobile)
 						  .birthday(birthday);
@@ -141,28 +140,28 @@ public class User {
 			profile.setFileId(file.getFileId());
 			profile.setExtension(file.getExtension());
 			profile.setPath(file.getPath() + "/" + file.getName());
-			userInfoDTOBuilder.profile(profile);
+			builder.profile(profile);
 		}
 		
 		if(followerUserList != null && followerUserList.size() > 0) {
-			userInfoDTOBuilder.followerCount(followerUserList.size());
+			builder.followerCount(followerUserList.size());
 		}
 		
 		
 		if(followingUserList != null && followingUserList.size() > 0) {
-			userInfoDTOBuilder.followingCount(followingUserList.size());
+			builder.followingCount(followingUserList.size());
 		}
 		
 		if(wishLists != null && wishLists.size() > 0) {
-			userInfoDTOBuilder.wishListCount(wishLists.size());
+			builder.wishListCount(wishLists.size());
 		}
 		
 		if(readBookList != null && readBookList.size() > 0) {
-			userInfoDTOBuilder.readedBooksCount(readBookList.size());
+			builder.readedBooksCount(readBookList.size());
 		}
 		
 		if(bookTreeList != null && bookTreeList.size() > 0) {
-			userInfoDTOBuilder.bookTreesCount(bookTreeList.size());
+			builder.bookTreesCount(bookTreeList.size());
 		}
 		
 		if(likeGenreList != null && likeGenreList.size() > 0) {
@@ -171,10 +170,11 @@ public class User {
 			likeGenreList.forEach((likeGenre) -> {
 				likeGenreDTOList.add(likeGenre.toSimpleLikeGenreDTO());
 			});
-			userInfoDTOBuilder.likeGenre(likeGenreDTOList);
+			builder.likeGenre(likeGenreDTOList);
 		}
 		
-		return userInfoDTOBuilder.build();
+		return builder.build();
 	}
 	
+
 }

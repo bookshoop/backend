@@ -1,18 +1,24 @@
 package com.project.bookforeast.book.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.project.bookforeast.book.dto.BookInfosDTO;
 import com.project.bookforeast.book.dto.DetailBookInfoDTO;
 import com.project.bookforeast.book.dto.SimpleBookInfoDTO;
+import com.project.bookforeast.book.service.BookService;
 import com.project.bookforeast.common.domain.dto.PagingInfoDTO;
 import com.project.bookforeast.common.domain.dto.SearchDTO;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -25,16 +31,29 @@ import jakarta.websocket.server.PathParam;
 @RequestMapping("/api/u/v1")
 public class BookController {
 
+	
+	private final BookService bookService;
+	
+	
+	@Autowired
+	public BookController(BookService bookService) {
+		this.bookService = bookService;
+	}
+	
+	
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", 
 					     description = "1. 파라미터 값이 없을때 \t\n 2. 파라미터가 부적절한 값일 때",
 					     content = @Content(schema = @Schema(example = "{\"code\" : \"400\", \"message\" : \"message\"}"))),
 			@ApiResponse(responseCode = "200",
-						 description = "책 전체 정보 가져오기 성공",
+						 description = "책  정보 가져오기 성공",
 						 content = @Content(schema = @Schema(implementation = BookInfosDTO.class)))		
 		})
 	@GetMapping("/books")
-	public ResponseEntity<BookInfosDTO> getBookInfos(@RequestBody @Valid PagingInfoDTO pagingInfoDTO, @RequestBody @Valid SearchDTO searchDTO) {
+	public ResponseEntity<BookInfosDTO> getBookInfo(@Schema(requiredMode = RequiredMode.NOT_REQUIRED, defaultValue = "10") @RequestParam(defaultValue = "10") int itemSize, 
+													@Schema(requiredMode = RequiredMode.NOT_REQUIRED, description = "없을경우 첫페이지야") @RequestParam String cursor, 
+													@Schema(requiredMode = RequiredMode.NOT_REQUIRED) @RequestParam String searchValue) {
+		BookInfosDTO bookInfoDTO = bookService.getBookInfo(itemSize, cursor, searchValue);
 		return ResponseEntity.ok(null);
 	}
 	
