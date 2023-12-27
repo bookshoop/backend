@@ -64,8 +64,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 		        "CONCAT(LPAD(DATE_FORMAT(U.REGIST_DT, '%Y%m%d%H%i%s'), 10, '0'), LPAD(U.USER_ID, 10, '0')) AS CS " + 
 		    "FROM USER U " +
 		    "LEFT OUTER JOIN FILE_GROUP FG ON U.PROFILE_ID = FG.FILEGROUP_ID " +
-		    "LEFT OUTER JOIN FILE F ON FG.FILEGROUP_ID = F.FILEGROUP_ID" +
-		    "WHERE CONCAT(LPAD(DATE_FORMAT(U.REGIST_DT, '%Y%m%d%H%i%s'), 10, '0'), LPAD(U.USER_ID, 10, '0')) >= :cursor",
+		    "LEFT OUTER JOIN FILE F ON FG.FILEGROUP_ID = F.FILEGROUP_ID " +
+		    "WHERE CONCAT(LPAD(DATE_FORMAT(U.REGIST_DT, '%Y%m%d%H%i%s'), 10, '0'), LPAD(U.USER_ID, 10, '0')) > :cursor",
 		    nativeQuery = true)
 	public Page<SimpleUserInfoInterface> findEntitiesByCursor(String cursor, Long userId, Pageable page);
 
@@ -85,7 +85,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 		    "FROM USER U " +
 		    "LEFT OUTER JOIN FILE_GROUP FG ON U.PROFILE_ID = FG.FILEGROUP_ID " +
 		    "LEFT OUTER JOIN FILE F ON FG.FILEGROUP_ID = F.FILEGROUP_ID " +
-		    "WHERE U.NICKNAME LIKE '%' || :searchValue || '%' ",
+		    "WHERE U.NICKNAME LIKE CONCAT('%', :searchValue, '%')",
 		    nativeQuery = true)
 	public Page<SimpleUserInfoInterface> findEntitiesBySearchValue(String searchValue, Long userId, Pageable page);
 	
@@ -103,9 +103,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 		        "CONCAT(LPAD(LENGTH(U.NICKNAME), 10, '0'), LPAD(U.USER_ID, 10, '0')) AS CS " + 
 		    "FROM USER U " +
 		    "LEFT OUTER JOIN FILE_GROUP FG ON U.PROFILE_ID = FG.FILEGROUP_ID " +
-		    "LEFT OUTER JOIN FILE F ON FG.FILEGROUP_ID = F.FILEGROUP_ID" + 
-		    "WHERE U.NICKNAME LIKE '%' || :searchValue || '%' " +
-		    "  AND CONCAT(LPAD(LENGTH(U.NICKNAME), 10, '0'), LPAD(U.USER_ID, 10, '0')) > :cursor",
+		    "LEFT OUTER JOIN FILE F ON FG.FILEGROUP_ID = F.FILEGROUP_ID " + 
+		    "WHERE U.NICKNAME LIKE CONCAT('%', :searchValue, '%') " +
+		    "AND CONCAT(LPAD(LENGTH(U.NICKNAME), 10, '0'), LPAD(U.USER_ID, 10, '0')) > :cursor",
 		    nativeQuery = true)
 	public Page<SimpleUserInfoInterface> findEntitiesByCursorAndSearchValue(String cursor, String searchValue, Long userId, Pageable page);
 	

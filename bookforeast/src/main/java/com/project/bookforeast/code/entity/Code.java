@@ -1,18 +1,27 @@
 package com.project.bookforeast.code.entity;
 
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.bookforeast.code.dto.CodeDTO;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -25,14 +34,45 @@ public class Code {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long codeId;
 	private String codename;
-	@Column(name = "upper_code_id")
-	private int upperCodeId;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "upper_code_id")
+	@JsonIgnore
+	private Code parentCode;
+	
+	@OneToMany(mappedBy = "parentCode", fetch = FetchType.LAZY, orphanRemoval = true)
+	@JsonIgnore
+	private List<Code> childCodeList;
+	
 	
 	public CodeDTO toDTO() {
-		return CodeDTO.builder()
-				.codeId(codeId)
-				.codename(codename)
-				.upperCodeId(upperCodeId)
-				.build();
+		Set<Long> convertedCodes = new HashSet<>();
+		if (convertedCodes.contains(codeId)) {
+	        return null;
+	    }
+		
+		CodeDTO.CodeDTOBuilder builder = CodeDTO.builder();
+		
+		builder.codeId(codeId)
+				.codename(codename);
+		
+		
+		if(parentCode != null) {
+			CodeDTO parentDTO = parentCode.toDTO();
+	        if (parentDTO != null) {
+	            builder.parentCodeDTO(parentDTO);
+	        }
+		}
+		
+		if(childCodeList != null && childCodeList.size() > 0) {
+			List<CodeDTO> codeDTOList = childCodeList.stream()
+										.map(Code::toDTO)
+										.filter(Objects::nonNull)
+										.collect(Collectors.toList());
+			builder.childCodeDTOList(codeDTOList);
+		}
+		
+		
+		return builder.build();
 	}
 }

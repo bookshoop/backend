@@ -36,14 +36,15 @@ public class SecurityConfig {
 			.authorizeHttpRequests(authorizeRequests ->
 				authorizeRequests
 					.requestMatchers("/", 
+									 "/api/u/v1/token",
 									 "/api/u/v1/social-login",
 									 "/api-docs", 
 									 "/api-docs/**",
 									 "/swagger-ui/**",
-									 "/api/u/v1/token",
 									 "/error",
 									 "/",
-									 "/swagger-config"
+									 "/swagger-config",
+									 "/api/n/v1/**"
 								).permitAll()
 					.requestMatchers(
 						"/api/u/v1/**"	

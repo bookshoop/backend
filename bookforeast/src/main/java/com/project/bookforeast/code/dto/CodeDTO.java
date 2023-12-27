@@ -1,5 +1,8 @@
 package com.project.bookforeast.code.dto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.project.bookforeast.code.entity.Code;
 
 import lombok.AllArgsConstructor;
@@ -19,13 +22,25 @@ public class CodeDTO {
 
 	private Long codeId;
 	private String codename;
-	private int upperCodeId;
+	private CodeDTO parentCodeDTO;
+	private List<CodeDTO> childCodeDTOList;
+	
 	
 	public Code toEntity() {
-		return Code.builder()
-				.codeId(codeId)
-				.codename(codename)
-				.upperCodeId(upperCodeId)
-				.build();
+		Code.CodeBuilder builder = Code.builder();
+		
+		builder.codeId(codeId)
+				.codename(codename);
+		
+		if(parentCodeDTO != null) {
+			builder.parentCode(parentCodeDTO.toEntity());
+		}
+		
+		if(childCodeDTOList != null && childCodeDTOList.size() > 0) {
+			List<Code> codeList = childCodeDTOList.stream().map(CodeDTO::toEntity).collect(Collectors.toList());
+			builder.childCodeList(codeList);
+		}
+		
+		return builder.build();
 	}
 }

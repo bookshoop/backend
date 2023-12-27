@@ -1,5 +1,5 @@
 
-package com.project.bookforeast.common.swagger.config;
+package com.project.bookforeast.common.domain.config;
 
 
 
@@ -33,5 +33,15 @@ public class SwaggerConfig implements WebMvcConfigurer {
 				.pathsToMatch("/api/u/v1/**")
 				.build();
 	}
+	
+	
+	@Bean
+	public GroupedOpenApi commonOpenApi() {
+		return GroupedOpenApi.builder()
+				.group("common")
+				.pathsToMatch("/api/n/v1/**")
+				.build();
+	}
+
 	 
 }

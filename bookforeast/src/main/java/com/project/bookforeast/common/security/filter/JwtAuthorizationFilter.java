@@ -64,12 +64,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 "/api/u/v1/token",
                 "/swagger-ui/",
                 "/swagger-config",
-                "/error"
+                "/error",
+                "/api/n/v1/"
         		};
         String path = request.getRequestURI();
-        
-        System.out.println(path);
-        System.out.println(Arrays.toString(excludePath));
         boolean shouldNotFilter = Arrays.stream(excludePath).anyMatch(path::startsWith);
         
         return shouldNotFilter;

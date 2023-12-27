@@ -4,18 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.project.bookforeast.book.dto.BookInfosDTO;
 import com.project.bookforeast.book.dto.DetailBookInfoDTO;
-import com.project.bookforeast.book.dto.SimpleBookInfoDTO;
 import com.project.bookforeast.book.service.BookService;
+import com.project.bookforeast.book.service.CategoryService;
 import com.project.bookforeast.common.domain.dto.PagingInfoDTO;
 import com.project.bookforeast.common.domain.dto.SearchDTO;
+
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
@@ -25,19 +24,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.websocket.server.PathParam;
 
 @RestController
-@RequestMapping("/api/u/v1")
 public class BookController {
 
 	
 	private final BookService bookService;
+	private final CategoryService categoryService;
 	
 	
 	@Autowired
-	public BookController(BookService bookService) {
+	public BookController(BookService bookService, CategoryService categoryService) {
 		this.bookService = bookService;
+		this.categoryService = categoryService;
 	}
 	
 	
@@ -49,7 +48,7 @@ public class BookController {
 						 description = "책  정보 가져오기 성공",
 						 content = @Content(schema = @Schema(implementation = BookInfosDTO.class)))		
 		})
-	@GetMapping("/books")
+	@GetMapping("/api/u/v1/books")
 	public ResponseEntity<BookInfosDTO> getBookInfo(@Schema(requiredMode = RequiredMode.NOT_REQUIRED, defaultValue = "10") @RequestParam(defaultValue = "10") int itemSize, 
 													@Schema(requiredMode = RequiredMode.NOT_REQUIRED, description = "없을경우 첫페이지야") @RequestParam String cursor, 
 													@Schema(requiredMode = RequiredMode.NOT_REQUIRED) @RequestParam String searchValue) {
@@ -65,7 +64,7 @@ public class BookController {
 						 description = "베스트셀러 정보 가져오기 성공",
 						 content = @Content(schema = @Schema(implementation = BookInfosDTO.class)))		
 		})
-	@GetMapping("/books/best-seller")
+	@GetMapping("/api/u/v1/books/best-seller")
 	public ResponseEntity<BookInfosDTO> getBookBestSellerInfos(@RequestBody @Valid PagingInfoDTO pagingInfoDTO, @RequestBody @Valid SearchDTO searchDTO) {
 		return ResponseEntity.ok(null);
 	}
@@ -83,7 +82,7 @@ public class BookController {
 						 description = "추천 책 정보 가져오기 성공",
 						 content = @Content(schema = @Schema(implementation = BookInfosDTO.class)))		
 		})
-	@GetMapping("/books/recommended")
+	@GetMapping("/api/u/v1/books/recommended")
 	public ResponseEntity<BookInfosDTO> getBookRecommendedInfos(@RequestBody @Valid PagingInfoDTO pagingInfoDTO) {
 		return ResponseEntity.ok(null);
 	}
@@ -101,10 +100,24 @@ public class BookController {
 						 description = "책 상세 정보 가져오기 성공",
 						 content = @Content(schema = @Schema(implementation = DetailBookInfoDTO.class)))		
 		})
-	@GetMapping("/books/{id}")
+	@GetMapping("/api/u/v1/books/{id}")
 	public ResponseEntity<DetailBookInfoDTO> getBookInfo(@PathVariable @Valid @Schema(description = "isbn / isbn13 / id") @NotBlank String id) {
 		return ResponseEntity.ok(null);
 	}
 	
+	
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", 
+					     description = "1. 파라미터 값이 없을때 \t\n 2. 파라미터가 부적절한 값일 때",
+					     content = @Content(schema = @Schema(example = "{\"code\" : \"400\", \"message\" : \"message\"}"))),
+			@ApiResponse(responseCode = "200",
+						 description = "책 상세 정보 가져오기 성공",
+						 content = @Content(schema = @Schema(implementation = DetailBookInfoDTO.class)))		
+		})
+	@GetMapping("/api/n/v1/testCategory/{category}")
+	public ResponseEntity<DetailBookInfoDTO> testCategory(@PathVariable @Valid @NotBlank String category) {
+		categoryService.classifyCatg(category);
+		return ResponseEntity.ok(null);
+	}
 	
 }
