@@ -25,7 +25,7 @@ public class AladinCategoryServiceImpl implements CategoryService {
 		System.out.println("werwrwer");
 		
 	}
-
+	
 	
 
 	
