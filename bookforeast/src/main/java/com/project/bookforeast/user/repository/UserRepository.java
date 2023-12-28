@@ -2,7 +2,6 @@ package com.project.bookforeast.user.repository;
 
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

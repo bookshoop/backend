@@ -1,6 +1,10 @@
 package com.project.bookforeast.code.dto;
 
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.project.bookforeast.code.entity.Code;
@@ -23,24 +27,30 @@ public class CodeDTO {
 	private Long codeId;
 	private String codename;
 	private CodeDTO parentCodeDTO;
-	private List<CodeDTO> childCodeDTOList;
+	private List<CodeDTO> childCodesDTO;
 	
 	
 	public Code toEntity() {
+		Set<Long> convertedCodes = new HashSet<>();
+		if (convertedCodes.contains(codeId)) {
+	        return null;
+	    }
+		
 		Code.CodeBuilder builder = Code.builder();
 		
 		builder.codeId(codeId)
 				.codename(codename);
 		
-		if(parentCodeDTO != null) {
-			builder.parentCode(parentCodeDTO.toEntity());
-		}
 		
-		if(childCodeDTOList != null && childCodeDTOList.size() > 0) {
-			List<Code> codeList = childCodeDTOList.stream().map(CodeDTO::toEntity).collect(Collectors.toList());
-			builder.childCodeList(codeList);
-		}
-		
+	    if (childCodesDTO != null && !childCodesDTO.isEmpty()) {
+            List<Code> childCodes = childCodesDTO.stream()
+                    .map(CodeDTO::toEntity)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            builder.childCodes(childCodes);
+        }
+	    
+	    
 		return builder.build();
 	}
 }

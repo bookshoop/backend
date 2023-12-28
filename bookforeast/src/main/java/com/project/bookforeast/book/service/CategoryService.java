@@ -1,6 +1,8 @@
 package com.project.bookforeast.book.service;
 
+import com.project.bookforeast.code.dto.CodeDTO;
+
 public interface CategoryService {
 
-	public void classifyCatg(String categoryStr);
+	public CodeDTO classifyCatg(String categoryStr);
 }

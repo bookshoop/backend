@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.bookforeast.code.dto.CodeDTO;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -40,10 +41,8 @@ public class Code {
 	@JsonIgnore
 	private Code parentCode;
 	
-	@OneToMany(mappedBy = "parentCode", fetch = FetchType.LAZY, orphanRemoval = true)
-	@JsonIgnore
-	private List<Code> childCodeList;
-	
+	@OneToMany(mappedBy = "parentCode", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Code> childCodes;
 	
 	public CodeDTO toDTO() {
 		Set<Long> convertedCodes = new HashSet<>();
@@ -57,21 +56,13 @@ public class Code {
 				.codename(codename);
 		
 		
-		if(parentCode != null) {
-			CodeDTO parentDTO = parentCode.toDTO();
-	        if (parentDTO != null) {
-	            builder.parentCodeDTO(parentDTO);
-	        }
-		}
-		
-		if(childCodeList != null && childCodeList.size() > 0) {
-			List<CodeDTO> codeDTOList = childCodeList.stream()
-										.map(Code::toDTO)
-										.filter(Objects::nonNull)
-										.collect(Collectors.toList());
-			builder.childCodeDTOList(codeDTOList);
-		}
-		
+	    if (childCodes != null && !childCodes.isEmpty()) {
+            List<CodeDTO> childCodeDTOs = childCodes.stream()
+                    .map(Code::toDTO)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            builder.childCodesDTO(childCodeDTOs);
+        }
 		
 		return builder.build();
 	}
