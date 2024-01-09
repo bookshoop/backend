@@ -20,6 +20,28 @@ public class CodeServiceImpl implements CodeService {
 	
 	public CodeDTO findAllByCodename(String codename) {
 		Code code = codeRepository.findAllByCodename(codename);
+		
+		if(code == null) {
+			return null;
+		}
+		
 		return code.toDTO();
+	}
+
+
+	@Override
+	public CodeDTO findByCodename(String codename) {
+		Code code = codeRepository.findByCodename(codename);
+		
+		if(code == null) {
+			return null;
+		}
+		
+		return code.toDTO();
+	}
+	
+	
+	public void save(CodeDTO codeDTO) {
+		codeRepository.save(codeDTO.toEntity());
 	}
 }

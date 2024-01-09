@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,7 +12,6 @@ import com.project.bookforeast.book.dto.DetailBookInfoDTO;
 import com.project.bookforeast.book.service.BookService;
 import com.project.bookforeast.book.service.CategoryService;
 import com.project.bookforeast.common.domain.dto.PagingInfoDTO;
-import com.project.bookforeast.common.domain.dto.SearchDTO;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,14 +43,14 @@ public class BookController {
 					     description = "1. 파라미터 값이 없을때 \t\n 2. 파라미터가 부적절한 값일 때",
 					     content = @Content(schema = @Schema(example = "{\"code\" : \"400\", \"message\" : \"message\"}"))),
 			@ApiResponse(responseCode = "200",
-						 description = "책  정보 가져오기 성공",
+						 description = "책 목록 가져오기 성공",
 						 content = @Content(schema = @Schema(implementation = BookInfosDTO.class)))		
 		})
 	@GetMapping("/api/u/v1/books")
 	public ResponseEntity<BookInfosDTO> getBookInfo(@Schema(requiredMode = RequiredMode.NOT_REQUIRED, defaultValue = "10") @RequestParam(defaultValue = "10") int itemSize, 
 													@Schema(requiredMode = RequiredMode.NOT_REQUIRED, description = "없을경우 첫페이지야") @RequestParam String cursor, 
 													@Schema(requiredMode = RequiredMode.NOT_REQUIRED) @RequestParam String searchValue) {
-		BookInfosDTO bookInfoDTO = bookService.getBookInfo(itemSize, cursor, searchValue);
+		BookInfosDTO bookInfosDTO = bookService.getBookInfo(itemSize, cursor, searchValue);
 		return ResponseEntity.ok(null);
 	}
 	
@@ -65,7 +63,11 @@ public class BookController {
 						 content = @Content(schema = @Schema(implementation = BookInfosDTO.class)))		
 		})
 	@GetMapping("/api/u/v1/books/best-seller")
-	public ResponseEntity<BookInfosDTO> getBookBestSellerInfos(@RequestBody @Valid PagingInfoDTO pagingInfoDTO, @RequestBody @Valid SearchDTO searchDTO) {
+	public ResponseEntity<BookInfosDTO> getBookBestSellerInfos(@Schema(defaultValue = "10") @RequestParam(defaultValue = "10", required = false) int itemSize, 
+															   @Schema(description = "없을경우 첫페이지야") @RequestParam(required = false) String cursor) {
+		
+		BookInfosDTO bookInfosDTO = bookService.getBookBestSellerInfos(itemSize, cursor);
+		
 		return ResponseEntity.ok(null);
 	}
 	

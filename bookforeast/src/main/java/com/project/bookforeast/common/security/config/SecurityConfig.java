@@ -44,7 +44,8 @@ public class SecurityConfig {
 									 "/error",
 									 "/",
 									 "/swagger-config",
-									 "/api/n/v1/**"
+									 "/api/n/v1/**",
+									 "/api/u/v1/books/best-seller"
 								).permitAll()
 					.requestMatchers(
 						"/api/u/v1/**"	

@@ -19,5 +19,5 @@ public class BookInfosDTO {
 	List<SimpleBookInfoDTO> content;
 	
 	@Schema(description = "다음데이터 있는지")
-	private String hasMore;
+	private boolean hasMore;
 }

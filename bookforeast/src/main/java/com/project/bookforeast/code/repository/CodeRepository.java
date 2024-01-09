@@ -13,4 +13,7 @@ public interface CodeRepository extends JpaRepository<Code, Long>{
 		       "WHERE c.codename = :codename")
 	public Code findAllByCodename(String codename);
 
+
+	public Code findByCodename(String codename);
+
 }

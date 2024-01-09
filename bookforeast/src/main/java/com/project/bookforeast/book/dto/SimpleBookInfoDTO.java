@@ -15,7 +15,7 @@ import lombok.Setter;
 public class SimpleBookInfoDTO {
 
 	@Schema(description = "isbn 13자리 or isbn10자리")
-	private int id;
+	private String id;
 	
 	@Schema(description = "책 제목")
 	private String title;

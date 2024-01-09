@@ -1,4 +1,4 @@
-package com.project.bookforeast.book.dto;
+package com.project.bookforeast.book.dto.alagin;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SimpleAladinBookInfoDTO {
+public class SimpleAladinBookInfoDTO extends ApiBookInfoDTO {
 	private String title; // 도서 제목
 	private String author; // 저자
 	private String isbn; 

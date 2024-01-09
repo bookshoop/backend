@@ -1,6 +1,5 @@
-package com.project.bookforeast.book.dto;
+package com.project.bookforeast.book.dto.alagin;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -17,30 +16,28 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AladinRequestDTO {
 
-	@Value("${aladdin.api-key}")
-	private String API_KEY;
 	private String queryType;
 	private String itemSize;
 	private String searchTarget = "Book";
 	private String output = "js";
-	private String version = "20231101";
+	private String version = "20131101";
 	
 	
-	public MultiValueMap<String, String> toBestSellerReqMap() {
-		return toListReqMap("Bestseller");
+	public MultiValueMap<String, String> toBestSellerReqMap(String API_KEY, int start) {
+		return toListReqMap(API_KEY, "Bestseller", start);
 	}
 	
 	
-	private MultiValueMap<String, String> toListReqMap(String listType) {
+	private MultiValueMap<String, String> toListReqMap(String API_KEY, String listType, int start) {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
 		
 		map.add("ttbkey", API_KEY);
 		map.add("QueryType", listType);
 		map.add("MaxResults", itemSize);
-		map.add("start", "1");
 		map.add("SearchTarget", searchTarget);
 		map.add("output", output);
 		map.add("Version", version);
+		map.add("start", String.valueOf(start));
 		
 		return map;
 	}
