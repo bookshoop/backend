@@ -1,5 +1,7 @@
 package com.project.bookforeast.book.dto.alagin;
 
+import com.project.bookforeast.book.dto.SimpleBookInfoDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,8 +22,4 @@ public class SimpleAladinBookInfoDTO extends ApiBookInfoDTO {
 	private String cover; // 썸네일 사진 링크
 	
 	
-//
-//	public static SimpleBookInfoDTO toSimpleBookInfoDTO() {
-//		
-//	}
 }

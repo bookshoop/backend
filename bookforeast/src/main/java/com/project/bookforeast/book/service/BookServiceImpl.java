@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import com.project.bookforeast.book.dto.ApiBookInfosDTO;
 import com.project.bookforeast.book.dto.BookInfosDTO;
 import com.project.bookforeast.book.dto.DetailBookInfoDTO;
-import com.project.bookforeast.book.dto.SimpleBookInfoDTO;
 import com.project.bookforeast.book.entity.Book;
 import com.project.bookforeast.book.repository.BookRepository;
 
@@ -32,8 +31,7 @@ public class BookServiceImpl implements BookService {
 
 	@Override
 	public BookInfosDTO getBookBestSellerInfos(int itemSize, String cursor) {		
-		ApiBookInfosDTO apiBookInfosDTO = bookApiService.getBestSellerList(itemSize, cursor);
-		return bookApiService.apiDTOsToBookInfosDTO(itemSize, cursor, apiBookInfosDTO);
+		return bookApiService.getBestSellerList(itemSize, cursor);
 	}
 	
 	
@@ -44,7 +42,7 @@ public class BookServiceImpl implements BookService {
 		// 내부 db에 먼저 요청을 하기
 		// 책 id를 바탕으로 책 정보 가지고오는 내부 api만들기
 	public DetailBookInfoDTO getDetailBookInfo(String id) {
-		DetailBookInfoDTO detailBookInfoDTO = bookApiService.getDetailBookInfo();
+		DetailBookInfoDTO detailBookInfoDTO = bookApiService.getDetailBookInfo(id);
 		if(detailBookInfoDTO == null) {
 			detailBookInfoDTO = findByIsbn(id);
 		}

@@ -1,11 +1,14 @@
 package com.project.bookforeast.book.entity;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.project.bookforeast.book.dto.BookDTO;
 import com.project.bookforeast.book.dto.DetailBookInfoDTO;
+import com.project.bookforeast.file.entity.File;
 import com.project.bookforeast.file.entity.FileGroup;
 import com.project.bookforeast.user.entity.User;
 
@@ -85,13 +88,24 @@ public class Book {
 			   .writer(writer)
 			   .publisher(publisher)
 			   .description(description)
+			   .isbn(isbn)
 			   .isbn13(isbn)
 			   .price(price);
 
 		if(thumbnailFileGroup != null) {
-			com.project.bookforeast.file.entity.File file = thumbnailFileGroup.getFileList().get(0);
+			File file = thumbnailFileGroup.getFileList().get(0);
+			
+			String link = file.getPath() + "/" + file.getName() + "." + file.getExtension();
+			builder.link(link);
 		}		
+
+
+		if(registDt != null) {
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			builder.pubDate(format.format(registDt));
+		}
 			   
-        return null;
+
+        return builder.build();
     }
 }
