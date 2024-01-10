@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.project.bookforeast.book.dto.BookDTO;
+import com.project.bookforeast.book.dto.DetailBookInfoDTO;
 import com.project.bookforeast.file.entity.FileGroup;
 import com.project.bookforeast.user.entity.User;
 
@@ -32,7 +33,7 @@ public class Book {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long bookId;
-	private int isbn;
+	private String isbn;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id", updatable = false)
@@ -41,10 +42,11 @@ public class Book {
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private FileGroup thumbnailFileGroup;
 	
-	private String bookName;
+	private String title;
 	private String publisher;
 	private String writer;
-	private String introduction;
+	private String description;
+	private int price;
 
 	@Column(updatable = false)
 	@CreationTimestamp
@@ -55,11 +57,12 @@ public class Book {
 		BookDTO.BookDTOBuilder bookDTOBuilder = BookDTO.builder()
 													.bookId(bookId)
 													.isbn(isbn)
-													.bookName(bookName)
+													.title(title)
 													.publisher(publisher)
 													.writer(writer)
-													.introduction(introduction)
+													.description(description)
 													.registDt(registDt)
+													.price(price)
 													;
 		
 		if(registUser != null) {
@@ -72,4 +75,23 @@ public class Book {
 		
 		return bookDTOBuilder.build();
 	}
+
+
+    public DetailBookInfoDTO toDetailBookInfoDTO() {
+		DetailBookInfoDTO.DetailBookInfoDTOBuilder builder = DetailBookInfoDTO.builder();
+
+		builder.id(isbn)
+			   .title(title)
+			   .writer(writer)
+			   .publisher(publisher)
+			   .description(description)
+			   .isbn13(isbn)
+			   .price(price);
+
+		if(thumbnailFileGroup != null) {
+			com.project.bookforeast.file.entity.File file = thumbnailFileGroup.getFileList().get(0);
+		}		
+			   
+        return null;
+    }
 }

@@ -2,7 +2,17 @@ package com.project.bookforeast.book.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class DetailBookInfoDTO {
 
 	@Schema(description = "isbn / isbn13 / id")
@@ -11,7 +21,7 @@ public class DetailBookInfoDTO {
 	@Schema(description = "책제목", requiredMode = RequiredMode.REQUIRED)
 	private String title;
 	
-	@Schema(description = "알라딘 링크")
+	@Schema(description = "알라딘 링크나 유저가 등록한 책이면 해당 책 사진 경로")
 	private String link;
 	
 	@Schema(description = "저자", requiredMode = RequiredMode.REQUIRED)

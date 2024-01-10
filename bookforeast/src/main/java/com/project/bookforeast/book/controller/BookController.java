@@ -67,8 +67,7 @@ public class BookController {
 															   @Schema(description = "없을경우 첫페이지야") @RequestParam(required = false) String cursor) {
 		
 		BookInfosDTO bookInfosDTO = bookService.getBookBestSellerInfos(itemSize, cursor);
-		
-		return ResponseEntity.ok(null);
+		return ResponseEntity.ok(bookInfosDTO);
 	}
 	
 	
@@ -85,7 +84,7 @@ public class BookController {
 						 content = @Content(schema = @Schema(implementation = BookInfosDTO.class)))		
 		})
 	@GetMapping("/api/u/v1/books/recommended")
-	public ResponseEntity<BookInfosDTO> getBookRecommendedInfos(@RequestBody @Valid PagingInfoDTO pagingInfoDTO) {
+	public ResponseEntity<BookInfosDTO> getBookRecommendedInfos() {
 		return ResponseEntity.ok(null);
 	}
 	
@@ -103,23 +102,9 @@ public class BookController {
 						 content = @Content(schema = @Schema(implementation = DetailBookInfoDTO.class)))		
 		})
 	@GetMapping("/api/u/v1/books/{id}")
-	public ResponseEntity<DetailBookInfoDTO> getBookInfo(@PathVariable @Valid @Schema(description = "isbn / isbn13 / id") @NotBlank String id) {
+	public ResponseEntity<DetailBookInfoDTO> getBookInfo(@PathVariable @Valid @Schema(description = "isbn이나 isbn13으로 이루어진 id") @NotBlank String id) {
 		return ResponseEntity.ok(null);
 	}
 	
-	
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "400", 
-					     description = "1. 파라미터 값이 없을때 \t\n 2. 파라미터가 부적절한 값일 때",
-					     content = @Content(schema = @Schema(example = "{\"code\" : \"400\", \"message\" : \"message\"}"))),
-			@ApiResponse(responseCode = "200",
-						 description = "책 상세 정보 가져오기 성공",
-						 content = @Content(schema = @Schema(implementation = DetailBookInfoDTO.class)))		
-		})
-	@GetMapping("/api/n/v1/testCategory/{category}")
-	public ResponseEntity<DetailBookInfoDTO> testCategory(@PathVariable @Valid @NotBlank String category) {
-		categoryService.classifyCatg(category);
-		return ResponseEntity.ok(null);
-	}
 	
 }

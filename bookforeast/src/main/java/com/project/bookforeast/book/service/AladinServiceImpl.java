@@ -100,13 +100,23 @@ public class AladinServiceImpl implements BookApiService {
 
 		// hasMore설정하기
 		// 지금 현재 cursor + itemSize보다 total이 큰 경우
-		boolean hasMore = (total > itemSize + Integer.parseInt(cursor)) ? true : false;
-		bookInfosDTO.setHasMore(hasMore);
+		bookInfosDTO.setHasMore(checkHasMore(total, cursor, itemSize));
 		
 		return bookInfosDTO;
 	}
 	
 	
+	private boolean checkHasMore(int total, String cursor, int itemSize) {
+		boolean hasMore = false;
+		if(cursor == null) {
+			hasMore = (total > itemSize);
+		} else {
+			hasMore = (total > itemSize + Integer.parseInt(cursor));
+		}
+
+		return hasMore;
+	}
+
 
 	private SimpleBookInfoDTO apiDTOToBookInfoDTO(SimpleAladinBookInfoDTO simpleAladinBookInfoDTO, int index, String cursor) {
 		SimpleBookInfoDTO simpleBookInfoDTO = new SimpleBookInfoDTO();
@@ -115,7 +125,7 @@ public class AladinServiceImpl implements BookApiService {
 		simpleBookInfoDTO.setId(makeIdForamt(simpleAladinBookInfoDTO));
 		simpleBookInfoDTO.setThumbnail(simpleAladinBookInfoDTO.getCover());
 		simpleBookInfoDTO.setCategory(categoryService.classifyCatg(simpleAladinBookInfoDTO.getCategoryName()));
-		simpleBookInfoDTO.setCursor(makeCursorFormat(cursor, index));
+		simpleBookInfoDTO.setCursor(makeNextCursorFormat(cursor, index));
 	
 		return simpleBookInfoDTO;
 	}
@@ -142,7 +152,7 @@ public class AladinServiceImpl implements BookApiService {
 
 	
 
-	private String makeCursorFormat(String cursor, int index) {
+	private String makeNextCursorFormat(String cursor, int index) {
 		String currentCursor = "0000";
 		
 		if(cursor == null) {

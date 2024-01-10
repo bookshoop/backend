@@ -1,12 +1,9 @@
 package com.project.bookforeast.recommendforeast.entity;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
 
 import com.project.bookforeast.file.entity.FileGroup;
 import com.project.bookforeast.recommendforeast.dto.RecommendForeastDTO;

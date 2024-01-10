@@ -20,24 +20,26 @@ import lombok.Setter;
 public class BookDTO {
 
 	private Long bookId;
-	private int isbn;
+	private String isbn;
 	private UserDTO registUserDTO;
 	private FileGroupDTO thumbnailFileGroupDTO;
-	private String bookName;
+	private String title;
 	private String publisher;
 	private String writer;
-	private String introduction;
+	private String description;
 	private LocalDateTime registDt;
+	private int price;
 	
 	
 	public Book toEntity() {
 		Book.BookBuilder bookBuilder = Book.builder()
 										.bookId(bookId)
 										.isbn(isbn)
-										.bookName(bookName)
+										.title(title)
 										.publisher(publisher)
 										.writer(writer)
-										.introduction(introduction);
+										.description(description)
+										.price(price);
 		
 		if(registUserDTO != null) {
 			bookBuilder.registUser(registUserDTO.toEntity());
