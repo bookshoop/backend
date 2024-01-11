@@ -34,13 +34,7 @@ public class BookServiceImpl implements BookService {
 		return bookApiService.getBestSellerList(itemSize, cursor);
 	}
 	
-	
-		// 알라딘 api에 요청하고 그 결과가 없을 경우
-		// 책 아이디로 책 상세정보 가지고오는 알라딘 api만들기
-		
 
-		// 내부 db에 먼저 요청을 하기
-		// 책 id를 바탕으로 책 정보 가지고오는 내부 api만들기
 	public DetailBookInfoDTO getDetailBookInfo(String id) {
 		DetailBookInfoDTO detailBookInfoDTO = bookApiService.getDetailBookInfo(id);
 		if(detailBookInfoDTO == null) {
@@ -51,7 +45,7 @@ public class BookServiceImpl implements BookService {
 
 	}
 
-	public DetailBookInfoDTO findByIsbn(String isbn) {
+	private DetailBookInfoDTO findByIsbn(String isbn) {
 		Book book = bookRepository.findByIsbn(isbn);
 		return book.toDetailBookInfoDTO();
 	}
