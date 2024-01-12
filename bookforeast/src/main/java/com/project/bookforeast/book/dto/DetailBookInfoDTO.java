@@ -21,8 +21,11 @@ public class DetailBookInfoDTO {
 	@Schema(description = "책제목", requiredMode = RequiredMode.REQUIRED)
 	private String title;
 	
-	@Schema(description = "알라딘 링크나 유저가 등록한 책이면 해당 책 사진 경로")
-	private String link;
+	@Schema(description = "썸네일 경로")
+	private String thumbnailLink;
+	
+	@Schema(description = "카테고리")
+	private String category;
 	
 	@Schema(description = "저자", requiredMode = RequiredMode.REQUIRED)
 	private String writer;

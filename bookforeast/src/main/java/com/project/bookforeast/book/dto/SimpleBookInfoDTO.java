@@ -23,8 +23,8 @@ public class SimpleBookInfoDTO {
 	@Schema(description = "작가")
 	private String writer;
 	
-	@Schema(description = "썸네일")
-	private String thumbnail;
+	@Schema(description = "썸네일 경로")
+	private String thumbnailLink;
 	
 	@Schema(description = "카테고리")
 	private String category;

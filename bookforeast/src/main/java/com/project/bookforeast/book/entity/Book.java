@@ -95,8 +95,8 @@ public class Book {
 		if(thumbnailFileGroup != null) {
 			File file = thumbnailFileGroup.getFileList().get(0);
 			
-			String link = file.getPath() + "/" + file.getName() + "." + file.getExtension();
-			builder.link(link);
+			String thumbnailLink = file.getPath() + "/" + file.getName() + "." + file.getExtension();
+			builder.thumbnailLink(thumbnailLink);
 		}		
 
 

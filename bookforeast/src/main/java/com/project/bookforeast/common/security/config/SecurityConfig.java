@@ -3,7 +3,6 @@ package com.project.bookforeast.common.security.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -45,7 +44,8 @@ public class SecurityConfig {
 									 "/",
 									 "/swagger-config",
 									 "/api/n/v1/**",
-									 "/api/u/v1/books/best-seller"
+									 "/api/u/v1/books/best-seller",
+									 "/api/u/v1/book/**"
 								).permitAll()
 					.requestMatchers(
 						"/api/u/v1/**"	

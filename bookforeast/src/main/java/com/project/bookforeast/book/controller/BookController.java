@@ -4,15 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.bookforeast.book.dto.BookDTO;
 import com.project.bookforeast.book.dto.BookInfosDTO;
 import com.project.bookforeast.book.dto.DetailBookInfoDTO;
 import com.project.bookforeast.book.service.BookService;
-import com.project.bookforeast.book.service.CategoryService;
-import com.project.bookforeast.common.domain.dto.PagingInfoDTO;
-
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
@@ -28,13 +27,11 @@ public class BookController {
 
 	
 	private final BookService bookService;
-	private final CategoryService categoryService;
 	
 	
 	@Autowired
-	public BookController(BookService bookService, CategoryService categoryService) {
+	public BookController(BookService bookService) {
 		this.bookService = bookService;
-		this.categoryService = categoryService;
 	}
 	
 	
@@ -101,10 +98,28 @@ public class BookController {
 						 description = "책 상세 정보 가져오기 성공",
 						 content = @Content(schema = @Schema(implementation = DetailBookInfoDTO.class)))		
 		})
-	@GetMapping("/api/u/v1/books/{id}")
+	@GetMapping("/api/u/v1/book/{id}")
 	public ResponseEntity<DetailBookInfoDTO> getBookInfo(@PathVariable @Valid @Schema(description = "isbn이나 isbn13으로 이루어진 id") @NotBlank String id) {
-		return ResponseEntity.ok(null);
+		DetailBookInfoDTO detailBookInfoDTO = bookService.getDetailBookInfo(id);
+		return ResponseEntity.ok(detailBookInfoDTO);
 	}
 	
-	
+
+	@SecurityRequirement(name = "Bearer Authentication")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", 
+					     description = "1. 파라미터 값이 없을때 \t\n 2. 파라미터가 부적절한 값일 때",
+					     content = @Content(schema = @Schema(example = "{\"code\" : \"400\", \"message\" : \"message\"}"))),
+			@ApiResponse(responseCode = "401",
+			 			 description = "1. 엑세스 토큰이 없을 때 \t\n 2. 엑세스 토큰이 만료되었을 때 \t\n 3. 엑세스 토큰으로 유저를 찾을 수 없을 때",
+			 			 content = @Content(schema = @Schema(example = "{\"code\" : \"401\", \"message\" : \"message\"}"))),
+			@ApiResponse(responseCode = "200",
+						 description = "책 등록하기 성공"
+						 )		
+		})
+	@PostMapping("/api/u/v1/book")
+	public ResponseEntity<Void> insBookInfo(@RequestBody BookDTO bookDTO) {
+		return ResponseEntity.ok(null);
+	}
+
 }

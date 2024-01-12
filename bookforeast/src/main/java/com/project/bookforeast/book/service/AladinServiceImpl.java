@@ -1,23 +1,17 @@
 package com.project.bookforeast.book.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.project.bookforeast.book.dto.ApiBookInfosDTO;
 import com.project.bookforeast.book.dto.BookInfosDTO;
 import com.project.bookforeast.book.dto.DetailBookInfoDTO;
-import com.project.bookforeast.book.dto.SimpleBookInfoDTO;
-import com.project.bookforeast.book.dto.alagin.AladinBookInfoDTO;
 import com.project.bookforeast.book.dto.alagin.AladinBookInfosDTO;
 import com.project.bookforeast.book.dto.alagin.AladinDetailRequestDTO;
 import com.project.bookforeast.book.dto.alagin.AladinListRequestDTO;
-import com.project.bookforeast.book.dto.alagin.SimpleAladinBookInfoDTO;
+import com.project.bookforeast.book.dto.alagin.DetailAladinBookInfoDTO;
 
 
 @Service
@@ -87,8 +81,8 @@ public class AladinServiceImpl implements BookApiService {
 									.queryParams(aladinDetailRequestDTO.toDetailReqMap(API_KEY, isbn))
 									.build();
 		
-		AladinBookInfoDTO aladinBookInfoDTO = restTemplate.getForObject(uriComponents.toUri(), AladinBookInfoDTO.class);
-		DetailBookInfoDTO detailBookInfoDTO = dtoChangeService.apiDTOToDetailBookInfoDTO(aladinBookInfoDTO);
+		DetailAladinBookInfoDTO detailAladinBookInfoDTO = restTemplate.getForObject(uriComponents.toUri(), DetailAladinBookInfoDTO.class);
+		DetailBookInfoDTO detailBookInfoDTO = dtoChangeService.apiDTOToDetailBookInfoDTO(detailAladinBookInfoDTO.getItem().get(0));
 
 	return detailBookInfoDTO;		
 	

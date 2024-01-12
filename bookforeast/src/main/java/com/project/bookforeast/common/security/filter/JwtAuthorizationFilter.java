@@ -4,17 +4,12 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.project.bookforeast.common.security.error.TokenErrorResult;
-import com.project.bookforeast.common.security.error.TokenException;
 import com.project.bookforeast.common.security.service.JwtUtil;
 import com.project.bookforeast.common.security.service.SecurityService;
-import com.project.bookforeast.user.dto.UserDTO;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,7 +61,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 "/swagger-config",
                 "/error",
                 "/api/n/v1/",
-                "/api/u/v1/books/best-seller"
+                "/api/u/v1/books/best-seller",
+				"/api/u/v1/book/"
         		};
         String path = request.getRequestURI();
         boolean shouldNotFilter = Arrays.stream(excludePath).anyMatch(path::startsWith);

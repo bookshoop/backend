@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AladinBookInfoDTO {
-
-
+public class ApiBookInfoDTO {
+    private String isbn; 
+	private String isbn13;
 }

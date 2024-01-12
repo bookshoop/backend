@@ -3,14 +3,18 @@ package com.project.bookforeast.book.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.project.bookforeast.book.dto.ApiBookInfosDTO;
 import com.project.bookforeast.book.dto.BookInfosDTO;
 import com.project.bookforeast.book.dto.DetailBookInfoDTO;
 import com.project.bookforeast.book.dto.SimpleBookInfoDTO;
-import com.project.bookforeast.book.dto.alagin.AladinBookInfoDTO;
 import com.project.bookforeast.book.dto.alagin.AladinBookInfosDTO;
+import com.project.bookforeast.book.dto.alagin.ApiBookInfoDTO;
+import com.project.bookforeast.book.dto.alagin.DetailAladinBookInfoDTO;
 import com.project.bookforeast.book.dto.alagin.SimpleAladinBookInfoDTO;
 
+@Service
 public class AladinDTOChangeServiceImpl implements DTOChangeService {
     
 
@@ -54,15 +58,22 @@ public class AladinDTOChangeServiceImpl implements DTOChangeService {
 
 
     private SimpleBookInfoDTO apiDTOToSimpleBookInfoDTO(SimpleAladinBookInfoDTO simpleAladinBookInfoDTO, int index, String cursor) {
-		SimpleBookInfoDTO simpleBookInfoDTO = new SimpleBookInfoDTO();
-		simpleBookInfoDTO.setTitle(simpleAladinBookInfoDTO.getTitle());
-		simpleBookInfoDTO.setWriter(makeWriterFormat(simpleAladinBookInfoDTO.getAuthor()));
-		simpleBookInfoDTO.setId(makeIdForamt(simpleAladinBookInfoDTO));
-		simpleBookInfoDTO.setThumbnail(simpleAladinBookInfoDTO.getCover());
-		simpleBookInfoDTO.setCategory(categoryService.classifyCatg(simpleAladinBookInfoDTO.getCategoryName()));
-		simpleBookInfoDTO.setCursor(makeNextCursorFormat(cursor, index));
+		SimpleBookInfoDTO.SimpleBookInfoDTOBuilder builder = SimpleBookInfoDTO.builder();
+		String title = simpleAladinBookInfoDTO.getTitle();
+		String writer = makeWriterFormat(simpleAladinBookInfoDTO.getAuthor());
+		String id = makeIdForamt(simpleAladinBookInfoDTO);
+		String thumbnailLink = simpleAladinBookInfoDTO.getCover();
+		String category = categoryService.classifyCatg(simpleAladinBookInfoDTO.getCategoryName());
+		String nextCursor = makeNextCursorFormat(cursor, index);
+
+		builder.title(title)
+			   .writer(writer)
+			   .id(id)
+			   .thumbnailLink(thumbnailLink)
+			   .category(category)
+			   .cursor(nextCursor);
 	
-		return simpleBookInfoDTO;
+		return builder.build();
 	}
 
 
@@ -80,27 +91,6 @@ public class AladinDTOChangeServiceImpl implements DTOChangeService {
 	}
 
 
-
-
-
-	private String makeWriterFormat(String author) {
-		String writer = author.substring(0, author.indexOf("(") -1);
-		return writer;
-	}
-		
-		
-
-
-	private String makeIdForamt(SimpleAladinBookInfoDTO simpleAladinBookInfoDTO) {
-		String isbn = simpleAladinBookInfoDTO.getIsbn();
-		String isbn13 = simpleAladinBookInfoDTO.getIsbn();
-		
-		if(isbn13 == null || isbn13.length() == 0) {
-			return isbn;
-		}
-		return isbn13;
-	}
-
 	
 
 	private String makeNextCursorFormat(String currentCursor, int index) {
@@ -117,10 +107,61 @@ public class AladinDTOChangeServiceImpl implements DTOChangeService {
 
 
     @Override
-    public DetailBookInfoDTO apiDTOToDetailBookInfoDTO(AladinBookInfoDTO aladinBookInfoDTO) {
-        throw new UnsupportedOperationException("Unimplemented method 'apiDTOToDetailBookInfoDTO'");
+    public DetailBookInfoDTO apiDTOToDetailBookInfoDTO(ApiBookInfoDTO apiBookInfoDTO) {
+
+		if(apiBookInfoDTO == null || !(apiBookInfoDTO instanceof DetailAladinBookInfoDTO.Item)) {
+			return null;
+		}
+
+		DetailAladinBookInfoDTO.Item detailAladinBookInfoDTO = (DetailAladinBookInfoDTO.Item) apiBookInfoDTO;
+		String id = makeIdForamt(detailAladinBookInfoDTO);
+		String title = detailAladinBookInfoDTO.getTitle();
+		String thumbnailLink = detailAladinBookInfoDTO.getCover();
+		String category = categoryService.classifyCatg(detailAladinBookInfoDTO.getCategoryName());
+		String writer = makeWriterFormat(detailAladinBookInfoDTO.getAuthor());
+		String pubDate = detailAladinBookInfoDTO.getPubDate();
+		String description = detailAladinBookInfoDTO.getDescription();
+		String isbn = detailAladinBookInfoDTO.getIsbn();
+		String isbn13 = detailAladinBookInfoDTO.getIsbn13();
+		int price = detailAladinBookInfoDTO.getPriceStandard();
+		String publisher = detailAladinBookInfoDTO.getPublisher();
+
+		DetailBookInfoDTO.DetailBookInfoDTOBuilder builder = DetailBookInfoDTO.builder();
+		builder.id(id)
+			   .title(title)
+			   .thumbnailLink(thumbnailLink)
+			   .category(category)
+			   .writer(writer)
+			   .pubDate(pubDate)
+			   .description(description)
+			   .isbn(isbn)
+			   .isbn13(isbn13)
+			   .price(price)
+			   .publisher(publisher);
+
+		return builder.build();
     }
 
+
+
+
+	private String makeWriterFormat(String author) {
+			String writer = author.substring(0, author.indexOf("(") -1);
+			return writer;
+		}
+			
+			
+
+
+	private String makeIdForamt(ApiBookInfoDTO apiBookInfoDTO) {
+		String isbn = apiBookInfoDTO.getIsbn();
+		String isbn13 = apiBookInfoDTO.getIsbn();
+		
+		if(isbn13 == null || isbn13.length() == 0) {
+			return isbn;
+		}
+		return isbn13;
+	}
 
 
 }
