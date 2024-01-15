@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import com.project.bookforeast.common.security.dto.UserDetailsImpl;
 import com.project.bookforeast.common.security.error.TokenErrorResult;
 import com.project.bookforeast.common.security.error.TokenException;
-import com.project.bookforeast.user.dto.SocialLoginDTO;
+import com.project.bookforeast.user.dto.UserDTO;
 import com.project.bookforeast.user.entity.User;
 import com.project.bookforeast.user.repository.UserRepository;
 
@@ -36,9 +36,9 @@ public class SecurityServiceImpl implements SecurityService{
 	
 	
 	@Override
-	public void saveUserInSecurityContext(SocialLoginDTO socialLoginDTO) {
-		String socialId = socialLoginDTO.getSocialId();
-		String socialProvider = socialLoginDTO.getSocialProvider();
+	public void saveUserInSecurityContext(UserDTO userDTO) {
+		String socialId = userDTO.getSocialId();
+		String socialProvider = userDTO.getSocialProvider();
 		saveUserInSecurityContext(socialId, socialProvider);
 	}
 	
@@ -63,13 +63,26 @@ public class SecurityServiceImpl implements SecurityService{
 	}
 	
 	
-	public UserDetails getUserInfoInSecurityContext() {
+	
+	public UserDTO getUserInfoInSecurityContext() {
+		UserDetails userDetails = getUserDetailsInSecurityContext();
+		if(userDetails instanceof UserDetailsImpl) {
+			UserDetailsImpl userDetailsImpl = (UserDetailsImpl) getUserDetailsInSecurityContext();
+			User user = userDetailsImpl.getUser();
+			return user.toDTO();
+		} else {
+			return null;
+		}
+	}
+	
+
+	private UserDetails getUserDetailsInSecurityContext() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		UserDetails principal = (UserDetails) authentication.getPrincipal();
 		return principal;
 	}
-
 	
+
 	private UserDetails loadUserBySocialIdAndSocialProvider(String socialId, String socialProvider) {
 		User user = userRepository.findBySocialIdAndSocialProvider(socialId, socialProvider);
 		

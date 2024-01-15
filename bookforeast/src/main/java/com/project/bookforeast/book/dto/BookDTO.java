@@ -6,6 +6,7 @@ import com.project.bookforeast.book.entity.Book;
 import com.project.bookforeast.file.dto.FileGroupDTO;
 import com.project.bookforeast.user.dto.UserDTO;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,14 +20,21 @@ import lombok.Setter;
 @Builder
 public class BookDTO {
 
+	@Hidden
 	private Long bookId;
 	private String isbn;
+
+	@Hidden
 	private UserDTO registUserDTO;
+
+	@Hidden
 	private FileGroupDTO thumbnailFileGroupDTO;
 	private String title;
 	private String publisher;
 	private String writer;
 	private String description;
+
+	@Hidden
 	private LocalDateTime registDt;
 	private int price;
 	

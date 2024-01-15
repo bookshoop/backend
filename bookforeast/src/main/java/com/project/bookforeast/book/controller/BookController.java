@@ -1,24 +1,31 @@
 package com.project.bookforeast.book.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.project.bookforeast.book.dto.BookDTO;
 import com.project.bookforeast.book.dto.BookInfosDTO;
 import com.project.bookforeast.book.dto.DetailBookInfoDTO;
 import com.project.bookforeast.book.service.BookService;
+import com.project.bookforeast.common.security.service.JwtUtil;
+import com.project.bookforeast.file.service.FileService;
+
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
@@ -27,11 +34,13 @@ public class BookController {
 
 	
 	private final BookService bookService;
-	
+	private final JwtUtil jwtUtil;
+
 	
 	@Autowired
-	public BookController(BookService bookService) {
+	public BookController(BookService bookService, JwtUtil jwtUtil) {
 		this.bookService = bookService;
+		this.jwtUtil = jwtUtil;
 	}
 	
 	
@@ -117,8 +126,10 @@ public class BookController {
 						 description = "책 등록하기 성공"
 						 )		
 		})
-	@PostMapping("/api/u/v1/book")
-	public ResponseEntity<Void> insBookInfo(@RequestBody BookDTO bookDTO) {
+	@PostMapping(value = "/api/u/v1/book", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Void> insBookInfo(BookDTO bookDTO,  @RequestPart("multipartFile") MultipartFile file, HttpServletRequest request) {
+		String accessToken = jwtUtil.extractTokenFromHeader(request);
+		bookService.insBookInfo(accessToken, bookDTO, file);		
 		return ResponseEntity.ok(null);
 	}
 

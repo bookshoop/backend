@@ -50,7 +50,7 @@ public class UserAuthController {
 	{
 		
 		UserDTO savedOrFindUser = userService.socialLogin(socialLoginDTO);
-		securityService.saveUserInSecurityContext(socialLoginDTO);
+		securityService.saveUserInSecurityContext(savedOrFindUser);
 		Map<String, String> tokenMap = jwtUtil.initToken(savedOrFindUser);
 	
 		return ResponseEntity.ok(tokenMap);

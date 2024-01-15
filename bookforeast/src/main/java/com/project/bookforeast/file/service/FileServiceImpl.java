@@ -74,7 +74,7 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	@Transactional
-	public void fileUpload(MultipartFile file, FileGroup fileGroup, String contentName) {
+	public FileDTO fileUpload(MultipartFile file, FileGroup fileGroup, String contentName) {
 		boolean isFolderCreated = false;
 		if(fileGroup == null) {
 			FileGroupDTO fileGroupDTO = new FileGroupDTO();
@@ -85,7 +85,9 @@ public class FileServiceImpl implements FileService {
 		FileDTO fileDTO = setFileInfo(file, fileGroup, contentName);
 		try {
 			uploadFilesInServer(fileDTO, file);
-			fileRepository.save(fileDTO.toEntity());
+			FileDTO savedFileDTO = fileRepository.save(fileDTO.toEntity()).toDTO();
+			savedFileDTO.setFileGroupDTO(fileGroup.toDTO());
+			return savedFileDTO;
 		} catch (IllegalStateException | IOException e) {
 			e.printStackTrace();
 			deleteFiles(fileGroup);
@@ -161,11 +163,18 @@ public class FileServiceImpl implements FileService {
 
 	
 	private void createDirIfNotExists(String path) {
-		java.io.File file = new java.io.File(path);
+		String[] paths = path.split("/");
+		StringBuilder currentPath = new StringBuilder();
 
-		if (!file.exists()) {
-			file.mkdir();
+		for(int i = 0; i < paths.length; i++) {
+			currentPath.append(paths[i]).append("/");
+			java.io.File currentDir = new java.io.File(currentPath.toString());
+			if (!currentDir.exists()) {
+				currentDir.mkdir();
+			}
 		}
+		
+
 	}
 
 	

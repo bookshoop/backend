@@ -107,10 +107,17 @@ public class UserServiceImpl implements UserService {
 	}
 
 	
-	public DetailUserInfoDTO getUserInfo(String accessToken) {
+	public DetailUserInfoDTO getUserDetailInfo(String accessToken) {
 		checkTokenExpired(accessToken);
 		User user = findBySocialIdAndSocialProvider(accessToken);
 		return user.toDetailUserInfoDTO();
+	}
+
+	
+	public User getUserInfo(String accessToken) {
+		checkTokenExpired(accessToken);
+		User user = findBySocialIdAndSocialProvider(accessToken);
+		return user;
 	}
 
 

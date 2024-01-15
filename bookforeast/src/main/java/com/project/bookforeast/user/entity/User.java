@@ -53,7 +53,7 @@ public class User {
 	private String password;
 	private Date birthday;
 	
-	@OneToOne(cascade = CascadeType.REMOVE)
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "access_route_id")
 	private Code code;
 	
@@ -70,7 +70,7 @@ public class User {
 	
 	private LocalDateTime deleteDt;
 	
-	@OneToOne(cascade = CascadeType.REMOVE)
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "profile_id")
 	private FileGroup fileGroup;
 	

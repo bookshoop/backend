@@ -7,11 +7,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.bookforeast.common.domain.dto.PagingInfoDTO;
-import com.project.bookforeast.common.domain.dto.SearchDTO;
 import com.project.bookforeast.common.security.service.JwtUtil;
 import com.project.bookforeast.user.dto.DetailUserInfoDTO;
 import com.project.bookforeast.user.dto.UserInfosDTO;
@@ -20,7 +17,6 @@ import com.project.bookforeast.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -53,7 +49,7 @@ public class UserController {
 	})
 	public ResponseEntity<DetailUserInfoDTO> getUserInfo(HttpServletRequest request) {
 		String accessToken = jwtUtil.extractTokenFromHeader(request);
-		DetailUserInfoDTO userInfoDTO = userService.getUserInfo(accessToken);
+		DetailUserInfoDTO userInfoDTO = userService.getUserDetailInfo(accessToken);
 		return ResponseEntity.ok(userInfoDTO);
 	}
 	

@@ -9,7 +9,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.project.bookforeast.user.dto.UserDTO;
 import com.project.bookforeast.user.entity.User;
 
 @Component
@@ -21,6 +20,10 @@ public class UserDetailsImpl implements UserDetails {
 		this.user = user;
 	}
 	
+	public User getUser() {
+		return user;
+	}
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		String role = user.getRole();

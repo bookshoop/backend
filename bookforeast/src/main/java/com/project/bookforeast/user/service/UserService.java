@@ -14,7 +14,9 @@ import com.project.bookforeast.user.entity.User;
 public interface UserService {
 	public UserDTO socialLogin(SocialLoginDTO userCreateDTO);
 
-	public DetailUserInfoDTO getUserInfo(String accessToken);
+	public DetailUserInfoDTO getUserDetailInfo(String accessToken);
+
+	public User getUserInfo(String accessToken);
 
 	public UserDTO getUserInfoByUsingRefreshToken(String refreshToken);
 
@@ -26,6 +28,7 @@ public interface UserService {
 
 	public User findBySocialIdAndSocialProvider(String accessToken);
 
+	
 //	public UserDTO getUserDataInParameter(Map<String, Object> requestParam);
 //
 //	public UserDTO signUp(UserDTO userDTO, String string, MultipartFile profile);
