@@ -20,7 +20,7 @@ public interface FileService {
 	public boolean fileUpload(MultipartFile file, String contentName);
 
 	
-	public FileDTO fileUpload(MultipartFile file, FileGroup fileGroup, String string);
+	public FileDTO fileUpload(MultipartFile file, FileGroup fileGroup, String contentName);
 
 	
 	public void deleteFiles(List<File> files);
@@ -30,5 +30,8 @@ public interface FileService {
 	
 	
 	public void deleteFile(File file);
+
+
+    public FileDTO fileUpdate(MultipartFile file, FileGroup thumbnailFileGroup, String contentName);
 
 }

@@ -218,6 +218,14 @@ public class FileServiceImpl implements FileService {
 		}
 	}
 
+	@Override
+	public FileDTO fileUpdate(MultipartFile file, FileGroup thumbnailFileGroup, String contentName) {
+		File fileInfo = thumbnailFileGroup.getFileList().get(0);
+		deleteFile(fileInfo);
+		FileDTO savedFileDTO = fileUpload(file, thumbnailFileGroup, contentName);
+		return savedFileDTO;
+	}
+
 
 
 }

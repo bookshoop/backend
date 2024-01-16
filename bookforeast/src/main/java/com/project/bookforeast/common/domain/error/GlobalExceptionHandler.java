@@ -8,12 +8,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.project.bookforeast.book.error.BookErrorResult;
+import com.project.bookforeast.book.error.BookException;
 import com.project.bookforeast.common.security.error.TokenErrorResult;
 import com.project.bookforeast.common.security.error.TokenException;
 import com.project.bookforeast.user.error.UserErrorResult;
@@ -67,7 +70,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 	
 
-	
+	// bookException
+	@ExceptionHandler({BookException.class})
+	public ResponseEntity<ErrorResponse> handleBookException(final BookException exception) {
+		log.warn("BookException occur:" + exception);
+		BookErrorResult errorResult = exception.getBookErrorResult();
+		return ResponseEntity.status(errorResult.getStatus())
+				.body(new ErrorResponse(errorResult.getStatus().value(), errorResult.getMessage()));
+	}
+
+
+	//  parsingException
+	@ExceptionHandler({ParsingException.class})
+	public ResponseEntity<ErrorResponse> handleParsingException(final ParsingException exception) {
+		log.warn("ParsingException occur:" + exception);
+		ParsingErrorResult errorResult = exception.getParsingErrorResult();
+		return ResponseEntity.status(errorResult.getStatus())
+					.body(new ErrorResponse(errorResult.getStatus().value(), errorResult.getMessage()));
+	}
+
+
 	@RequiredArgsConstructor
 	@Getter
 	static class ErrorResponse {

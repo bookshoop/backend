@@ -10,6 +10,8 @@ import com.project.bookforeast.book.dto.BookDTO;
 import com.project.bookforeast.book.dto.BookInfosDTO;
 import com.project.bookforeast.book.dto.DetailBookInfoDTO;
 import com.project.bookforeast.book.entity.Book;
+import com.project.bookforeast.book.error.BookErrorResult;
+import com.project.bookforeast.book.error.BookException;
 import com.project.bookforeast.book.repository.BookRepository;
 import com.project.bookforeast.common.domain.constant.Content;
 import com.project.bookforeast.common.security.service.SecurityService;
@@ -18,7 +20,6 @@ import com.project.bookforeast.file.service.FileService;
 import com.project.bookforeast.user.dto.UserDTO;
 import com.project.bookforeast.user.entity.User;
 import com.project.bookforeast.user.repository.UserRepository;
-import com.project.bookforeast.user.service.UserService;
 
 
 @Service
@@ -80,13 +81,35 @@ public class BookServiceImpl implements BookService {
 		Book book = bookDTO.toEntity();
 		book.setRegistUser(findUser.get());
 		
-		FileDTO savedFileDTO = fileService.fileUpload(file, null, Content.BOOK.getContentName());
-		book.setThumbnailFileGroup(savedFileDTO.getFileGroupDTO().toEntity());
+		if(file != null) {
+			FileDTO savedFileDTO = fileService.fileUpload(file, null, Content.BOOK.getContentName());
+			book.setThumbnailFileGroup(savedFileDTO.getFileGroupDTO().toEntity());
+		}
 
-		bookRepository.save(bookDTO.toEntity());
+		bookRepository.save(book);
+	}
+
+	@Override
+	public void updBookInfo(String accessToken, BookDTO bookDTO, MultipartFile file) {
+		UserDTO userDTO = securityService.getUserInfoInSecurityContext();
+		Optional<User> findUser = userRepository.findById(userDTO.getUserId());
+
+		Book book = bookRepository.findByIsbnAndRegistUser(bookDTO.getIsbn(), findUser.get());
+		if(book == null) {
+			throw new BookException(BookErrorResult.NOT_REGISTED_BOOK);
+		}
+
+		if(file != null) {
+			FileDTO updatedFileDTO = fileService.fileUpdate(file, book.getThumbnailFileGroup(), Content.BOOK.getContentName());
+			book.setThumbnailFileGroup(updatedFileDTO.getFileGroupDTO().toEntity());
+		}
+
+		bookRepository.save(book);
 	}
 
 
+
+	
 //	public BookInfosDTO getRecommandBookInfos(int itemSize, String cursor) {
 //		// 좋아하는 장르, 자주읽는 장르, 생년월일 별 추천 도서 검색
 //		
