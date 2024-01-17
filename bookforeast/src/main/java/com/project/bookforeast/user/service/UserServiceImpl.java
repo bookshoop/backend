@@ -4,6 +4,8 @@ package com.project.bookforeast.user.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -19,6 +21,7 @@ import com.project.bookforeast.common.security.error.TokenErrorResult;
 import com.project.bookforeast.common.security.error.TokenException;
 import com.project.bookforeast.common.security.role.UserRole;
 import com.project.bookforeast.common.security.service.JwtUtil;
+import com.project.bookforeast.common.security.service.SecurityService;
 import com.project.bookforeast.file.entity.FileGroup;
 import com.project.bookforeast.file.service.FileService;
 import com.project.bookforeast.genre.dto.LikeGenreDTO;
@@ -33,6 +36,8 @@ import com.project.bookforeast.user.dto.UserDTO;
 import com.project.bookforeast.user.dto.UserInfosDTO;
 import com.project.bookforeast.user.dto.UserUpdDTO;
 import com.project.bookforeast.user.entity.User;
+import com.project.bookforeast.user.error.UserErrorResult;
+import com.project.bookforeast.user.error.UserException;
 import com.project.bookforeast.user.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
@@ -42,6 +47,7 @@ import io.jsonwebtoken.Claims;
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
+	private final SecurityService securityService;
 	private final FileService fileService;
 	private final GenreService genreService;
 	private final NicknameService nicknameService;
@@ -50,6 +56,7 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository, 
+						   SecurityService securityService,
 						   FileService fileService, 
 						   GenreService genreService, 
 						   NicknameService nicknameService,
@@ -57,6 +64,7 @@ public class UserServiceImpl implements UserService {
 						   ) 
 	{
 		this.userRepository = userRepository;
+		this.securityService = securityService;
 		this.fileService = fileService;
 		this.genreService = genreService;
 		this.nicknameService = nicknameService;
@@ -237,6 +245,19 @@ public class UserServiceImpl implements UserService {
 		userInfosDTO.setContent(users);
 		userInfosDTO.setHasMore(pagingUsers.hasNext());
 		return userInfosDTO;
+	}
+
+
+	@Override
+	public User findUserInSecurityContext() {
+		UserDTO userDTO = securityService.getUserInfoInSecurityContext();
+		Optional<User> findUser = userRepository.findById(userDTO.getUserId());
+
+		try {
+			return findUser.get();
+		} catch(NoSuchElementException e) {
+			throw new UserException(UserErrorResult.USER_NOT_EXIST);
+		}
 	}
 
 

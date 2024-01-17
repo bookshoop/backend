@@ -18,6 +18,7 @@ import com.project.bookforeast.user.entity.User;
 import com.project.bookforeast.user.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
@@ -70,8 +71,12 @@ public class JwtUtil {
 
 	
 	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-		final Claims claims = Jwts.parser().setSigningKey(SECRETKEY).parseClaimsJws(token).getBody();
-		return claimsResolver.apply(claims);
+		try {
+			final Claims claims = Jwts.parser().setSigningKey(SECRETKEY).parseClaimsJws(token).getBody();
+			return claimsResolver.apply(claims);
+		} catch(ExpiredJwtException e) {
+			throw new TokenException(TokenErrorResult.TOKEN_EXPIRED);
+		}
 	}
 	
 	

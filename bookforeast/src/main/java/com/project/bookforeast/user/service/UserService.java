@@ -28,7 +28,7 @@ public interface UserService {
 
 	public User findBySocialIdAndSocialProvider(String accessToken);
 
-	
+	public User findUserInSecurityContext();
 //	public UserDTO getUserDataInParameter(Map<String, Object> requestParam);
 //
 //	public UserDTO signUp(UserDTO userDTO, String string, MultipartFile profile);

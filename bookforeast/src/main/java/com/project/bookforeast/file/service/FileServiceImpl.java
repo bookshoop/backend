@@ -74,7 +74,7 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	@Transactional
-	public FileDTO fileUpload(MultipartFile file, FileGroup fileGroup, String contentName) {
+	public File fileUpload(MultipartFile file, FileGroup fileGroup, String contentName) {
 		boolean isFolderCreated = false;
 		if(fileGroup == null) {
 			FileGroupDTO fileGroupDTO = new FileGroupDTO();
@@ -85,9 +85,9 @@ public class FileServiceImpl implements FileService {
 		FileDTO fileDTO = setFileInfo(file, fileGroup, contentName);
 		try {
 			uploadFilesInServer(fileDTO, file);
-			FileDTO savedFileDTO = fileRepository.save(fileDTO.toEntity()).toDTO();
-			savedFileDTO.setFileGroupDTO(fileGroup.toDTO());
-			return savedFileDTO;
+			File savedFile = fileRepository.save(fileDTO.toEntity());
+			savedFile.setFileGroup(fileGroup);
+			return savedFile;
 		} catch (IllegalStateException | IOException e) {
 			e.printStackTrace();
 			deleteFiles(fileGroup);
@@ -219,11 +219,11 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public FileDTO fileUpdate(MultipartFile file, FileGroup thumbnailFileGroup, String contentName) {
+	public File fileUpdate(MultipartFile file, FileGroup thumbnailFileGroup, String contentName) {
 		File fileInfo = thumbnailFileGroup.getFileList().get(0);
 		deleteFile(fileInfo);
-		FileDTO savedFileDTO = fileUpload(file, thumbnailFileGroup, contentName);
-		return savedFileDTO;
+		File savedFile = fileUpload(file, thumbnailFileGroup, contentName);
+		return savedFile;
 	}
 
 

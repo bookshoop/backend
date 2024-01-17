@@ -1,6 +1,5 @@
 package com.project.bookforeast.book.service;
 
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,11 +14,10 @@ import com.project.bookforeast.book.error.BookException;
 import com.project.bookforeast.book.repository.BookRepository;
 import com.project.bookforeast.common.domain.constant.Content;
 import com.project.bookforeast.common.security.service.SecurityService;
-import com.project.bookforeast.file.dto.FileDTO;
+import com.project.bookforeast.file.entity.File;
 import com.project.bookforeast.file.service.FileService;
-import com.project.bookforeast.user.dto.UserDTO;
 import com.project.bookforeast.user.entity.User;
-import com.project.bookforeast.user.repository.UserRepository;
+import com.project.bookforeast.user.service.UserService;
 
 
 @Service
@@ -27,19 +25,19 @@ public class BookServiceImpl implements BookService {
 	private final BookApiService bookApiService;
 	private final BookRepository bookRepository;
 	private final SecurityService securityService;
-	private final UserRepository userRepository;
+	private final UserService userService;
 	private final FileService fileService;
 	
 	@Autowired
 	public BookServiceImpl(BookApiService bookApiService, 
 						   BookRepository bookRepository, 
 						   SecurityService securityService, 
-						   UserRepository userRepository, 
+						   UserService userService, 
 						   FileService fileService) {
 		this.bookApiService = bookApiService;
 		this.bookRepository = bookRepository;
 		this.securityService = securityService;
-		this.userRepository = userRepository;
+		this.userService = userService;
 		this.fileService = fileService;
 	}
 
@@ -75,39 +73,68 @@ public class BookServiceImpl implements BookService {
 
 	@Override
 	public void insBookInfo(String accessToken, BookDTO bookDTO, MultipartFile file) {
-		UserDTO userDTO = securityService.getUserInfoInSecurityContext();
-		Optional<User> findUser = userRepository.findById(userDTO.getUserId());
+		User findUser = userService.findUserInSecurityContext();
 
 		Book book = bookDTO.toEntity();
-		book.setRegistUser(findUser.get());
+		book.setRegistUser(findUser);
 		
 		if(file != null) {
-			FileDTO savedFileDTO = fileService.fileUpload(file, null, Content.BOOK.getContentName());
-			book.setThumbnailFileGroup(savedFileDTO.getFileGroupDTO().toEntity());
+			File savedFile = fileService.fileUpload(file, null, Content.BOOK.getContentName());
+			book.setThumbnailFileGroup(savedFile.getFileGroup());
 		}
 
 		bookRepository.save(book);
 	}
+
 
 	@Override
 	public void updBookInfo(String accessToken, BookDTO bookDTO, MultipartFile file) {
-		UserDTO userDTO = securityService.getUserInfoInSecurityContext();
-		Optional<User> findUser = userRepository.findById(userDTO.getUserId());
+		User findUser = userService.findUserInSecurityContext();
 
-		Book book = bookRepository.findByIsbnAndRegistUser(bookDTO.getIsbn(), findUser.get());
+		Book book = bookRepository.findByIsbnAndRegistUser(bookDTO.getIsbn(), findUser);
 		if(book == null) {
 			throw new BookException(BookErrorResult.NOT_REGISTED_BOOK);
+		} else {
+			setUpdBookInfo(bookDTO, book, file);
 		}
-
-		if(file != null) {
-			FileDTO updatedFileDTO = fileService.fileUpdate(file, book.getThumbnailFileGroup(), Content.BOOK.getContentName());
-			book.setThumbnailFileGroup(updatedFileDTO.getFileGroupDTO().toEntity());
-		}
-
+		
 		bookRepository.save(book);
 	}
+	
+	
+	private void setUpdBookInfo(BookDTO updBookDTO, Book book, MultipartFile file) {
+		if(updBookDTO.getIsbn() != null || updBookDTO.getIsbn().length() > 0) {
+			book.setIsbn(updBookDTO.getIsbn());
+		}
+		
+		if(updBookDTO.getTitle() != null || updBookDTO.getTitle().length() > 0) {
+			book.setTitle(updBookDTO.getTitle());
+		}
+		
+		if(updBookDTO.getPublisher() != null || updBookDTO.getPublisher().length() > 0) {
+			book.setPublisher(updBookDTO.getPublisher());
+		}
+		
+		if(updBookDTO.getWriter() != null || updBookDTO.getWriter().length() > 0) {
+			book.setWriter(updBookDTO.getWriter());
+		}
 
-
+		if(updBookDTO.getDescription() != null || updBookDTO.getDescription().length() > 0) {
+			book.setDescription(updBookDTO.getDescription());
+		}
+		
+		if(updBookDTO.getPrice() != 0) {
+			book.setPrice(updBookDTO.getPrice());
+		}
+		
+		
+		if(file != null) {
+			File updatedFile = fileService.fileUpdate(file, book.getThumbnailFileGroup(), Content.BOOK.getContentName());
+			book.setThumbnailFileGroup(updatedFile.getFileGroup());
+		}
+	}
+	
+	
 
 	
 //	public BookInfosDTO getRecommandBookInfos(int itemSize, String cursor) {

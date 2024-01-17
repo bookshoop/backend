@@ -3,10 +3,8 @@ package com.project.bookforeast.file.entity;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
 import com.project.bookforeast.file.dto.FileDTO;
-import com.project.bookforeast.file.dto.FileGroupDTO;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -25,6 +23,7 @@ import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -36,7 +35,6 @@ public class File {
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "filegroup_id")
-	@Setter(AccessLevel.NONE)
 	private FileGroup fileGroup;
 	
 	private String path;
@@ -71,7 +69,6 @@ public class File {
 		
 		return fileDTOBuilder.build();
 	}
-	
-	
+
 	
 }
