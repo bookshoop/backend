@@ -223,9 +223,14 @@ public class FileServiceImpl implements FileService {
 		File fileInfo = thumbnailFileGroup.getFileList().get(0);
 		deleteFile(fileInfo);
 		File savedFile = fileUpload(file, thumbnailFileGroup, contentName);
-		return savedFile;
-	}
 
+		System.out.println("test");
+		System.out.println("test");
+		System.out.println("test");
+
+		return savedFile;
+
+	}
 
 
 }
