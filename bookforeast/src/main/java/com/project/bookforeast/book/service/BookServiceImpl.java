@@ -15,9 +15,13 @@ import com.project.bookforeast.book.repository.BookRepository;
 import com.project.bookforeast.common.domain.constant.Content;
 import com.project.bookforeast.common.security.service.SecurityService;
 import com.project.bookforeast.file.entity.File;
+import com.project.bookforeast.file.entity.FileGroup;
 import com.project.bookforeast.file.service.FileService;
 import com.project.bookforeast.user.entity.User;
 import com.project.bookforeast.user.service.UserService;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 
 @Service
@@ -132,6 +136,17 @@ public class BookServiceImpl implements BookService {
 			File updatedFile = fileService.fileUpdate(file, book.getThumbnailFileGroup(), Content.BOOK.getContentName());
 			book.setThumbnailFileGroup(updatedFile.getFileGroup());
 		}
+	}
+
+	@Override
+	public void delBookInfo(String accessToken, String id) {
+		// db에 저장된 책 정보 지우기(파일db에 것 까지 연쇄삭제되어야함)
+		// 서버에 저장된 파일 지우기
+		Book book = bookRepository.findByIsbn(id);
+		FileGroup delFileGroup = book.getThumbnailFileGroup();
+		fileService.deleteFiles(delFileGroup);
+		bookRepository.delete(book);
+
 	}
 	
 	

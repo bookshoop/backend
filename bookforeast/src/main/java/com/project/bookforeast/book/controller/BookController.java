@@ -3,6 +3,7 @@ package com.project.bookforeast.book.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -151,6 +152,26 @@ public class BookController {
 	public ResponseEntity<Void> updBookInfo(BookDTO bookDTO,  @RequestPart("multipartFile") MultipartFile file, HttpServletRequest request) {
 		String accessToken = jwtUtil.extractTokenFromHeader(request);
 		bookService.updBookInfo(accessToken, bookDTO, file);		
+		return ResponseEntity.ok(null);
+	}
+
+
+	@SecurityRequirement(name = "Bearer Authentication")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", 
+					     description = "1. 파라미터 값이 없을때 \t\n 2. 파라미터가 부적절한 값일 때",
+					     content = @Content(schema = @Schema(example = "{\"code\" : \"400\", \"message\" : \"message\"}"))),
+			@ApiResponse(responseCode = "401",
+			 			 description = "1. 엑세스 토큰이 없을 때 \t\n 2. 엑세스 토큰이 만료되었을 때 \t\n 3. 엑세스 토큰으로 유저를 찾을 수 없을 때",
+			 			 content = @Content(schema = @Schema(example = "{\"code\" : \"401\", \"message\" : \"message\"}"))),
+			@ApiResponse(responseCode = "200",
+						 description = "책 삭제하기 성공"
+						 )		
+		})
+	@DeleteMapping(value = "/api/u/v1/book/{id}")
+	public ResponseEntity<Void> delBookInfo(HttpServletRequest request, @PathVariable @Valid @Schema(description = "isbn이나 isbn13으로 이루어진 id") @NotBlank String id) {
+		String accessToken = jwtUtil.extractTokenFromHeader(request);
+		bookService.delBookInfo(accessToken, id);
 		return ResponseEntity.ok(null);
 	}
 }

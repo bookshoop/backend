@@ -6,6 +6,7 @@ import com.project.bookforeast.book.dto.BookDTO;
 import com.project.bookforeast.book.dto.BookInfosDTO;
 import com.project.bookforeast.book.dto.DetailBookInfoDTO;
 
+
 public interface BookService {
 
 	public BookInfosDTO getBookInfo(int itemSize, String cursor, String searchValue);
@@ -17,4 +18,6 @@ public interface BookService {
 	public void insBookInfo(String accessToken, BookDTO bookDTO, MultipartFile file);
 
     public void updBookInfo(String accessToken, BookDTO bookDTO, MultipartFile file);
+
+    public void delBookInfo(String accessToken, String id);
 }

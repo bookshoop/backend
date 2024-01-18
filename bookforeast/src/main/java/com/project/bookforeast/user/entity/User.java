@@ -18,7 +18,6 @@ import com.project.bookforeast.genre.dto.SimpleLikeGenreDTO;
 import com.project.bookforeast.genre.entity.LikeGenre;
 import com.project.bookforeast.readBook.entity.ReadBook;
 import com.project.bookforeast.user.dto.DetailUserInfoDTO;
-import com.project.bookforeast.user.dto.SimpleUserInfoInterface;
 import com.project.bookforeast.user.dto.UserDTO;
 import com.project.bookforeast.wishList.entity.WishList;
 
