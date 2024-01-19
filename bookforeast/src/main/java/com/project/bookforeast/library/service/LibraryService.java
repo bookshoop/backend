@@ -1,11 +1,15 @@
 package com.project.bookforeast.library.service;
 
-import com.project.bookforeast.library.dto.LibraryDTO;
+import java.util.List;
 
-import jakarta.validation.Valid;
+import com.project.bookforeast.library.dto.LibraryDTO;
+import com.project.bookforeast.library.dto.SimpleLibraryDTO;
+
 
 public interface LibraryService {
 
-    public void insLibrary(@Valid LibraryDTO libraryDTO);
+    public void insLibrary(SimpleLibraryDTO simpleLibraryDTO);
+
+    public LibraryDTO getLibraryInfos();
     
 }

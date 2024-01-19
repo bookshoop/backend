@@ -1,13 +1,14 @@
 package com.project.bookforeast.library.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.project.bookforeast.library.entity.Library;
 import com.project.bookforeast.user.dto.UserDTO;
 
 import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,10 +22,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class LibraryDTO {
 
-	@Hidden
 	private Long libraryId;
-
-	@Schema(requiredMode = RequiredMode.NOT_REQUIRED, description = "서재일 경우 상위 id를 안줘도되고, 책장이랑 책칸은 필요해")
+	private LibraryDTO parentLibraryDTO;
 	private Long upperLibraryId;
 	private String libraryName;
 
@@ -32,23 +31,30 @@ public class LibraryDTO {
 	private LocalDateTime registDt;
 
 	@Hidden
-	private UserDTO userDTO;
-
-	@Schema(requiredMode = RequiredMode.REQUIRED, description = "0:서재, 1:책장, 2:책칸")
+	private UserDTO registUserDTO;
 	private int depth;
+
+	private List<LibraryDTO> childLibraryDTOs;
 	
 	
 	public Library toEntity() {
-		Library.LibraryBuilder libraryBuilder = Library.builder()
+		Library.LibraryBuilder builder = Library.builder()
 													.libraryId(libraryId)
-													.upperLibraryId(upperLibraryId)
 													.libraryName(libraryName)
 													.depth(depth);
 		
-		if(userDTO != null) {
-			libraryBuilder.user(userDTO.toEntity());
+		if(registUserDTO != null) {
+			builder.registUser(registUserDTO.toEntity());
+		}
+
+		if(childLibraryDTOs != null && !childLibraryDTOs.isEmpty()) {
+			List<Library> childLibraries = childLibraryDTOs.stream()
+			                                 .map(LibraryDTO::toEntity)
+											 .filter(Objects::nonNull)
+											 .collect(Collectors.toList());
+		    builder.childLibraries(childLibraries);
 		}
 		
-		return libraryBuilder.build();
+		return builder.build();
 	}
 }
