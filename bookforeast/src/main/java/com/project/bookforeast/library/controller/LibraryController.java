@@ -42,8 +42,7 @@ public class LibraryController {
 						 description = "서재등록하기 성공"),
 	})
     public ResponseEntity<Void> insLibrary(HttpServletRequest request,  @RequestBody @Valid LibraryDTO libraryDTO) {
-        String accessToken = jwtUtil.extractTokenFromHeader(request);
-        libraryService.insLibrary(accessToken, libraryDTO);
+        libraryService.insLibrary(libraryDTO);
         return ResponseEntity.ok(null);
     }
     

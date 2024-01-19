@@ -2,7 +2,6 @@ package com.project.bookforeast.book.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,20 +28,17 @@ public class BookServiceImpl implements BookService {
 	private final BookRepository bookRepository;
 	private final UserService userService;
 	private final FileService fileService;
-	private final JwtUtil jwtUtil;
 	
 	@Autowired
 	public BookServiceImpl(BookApiService bookApiService, 
 						   BookRepository bookRepository, 
 						   UserService userService, 
-						   FileService fileService,
-						   JwtUtil jwtUtil
+						   FileService fileService
 						   ) {
 		this.bookApiService = bookApiService;
 		this.bookRepository = bookRepository;
 		this.userService = userService;
 		this.fileService = fileService;
-		this.jwtUtil = jwtUtil;
 	}
 
 

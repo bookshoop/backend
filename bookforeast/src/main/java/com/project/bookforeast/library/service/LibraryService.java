@@ -6,6 +6,6 @@ import jakarta.validation.Valid;
 
 public interface LibraryService {
 
-    void insLibrary(String accessToken, @Valid LibraryDTO libraryDTO);
+    public void insLibrary(@Valid LibraryDTO libraryDTO);
     
 }
