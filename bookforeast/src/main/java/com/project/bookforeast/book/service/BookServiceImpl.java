@@ -2,6 +2,7 @@ package com.project.bookforeast.book.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,43 +14,42 @@ import com.project.bookforeast.book.error.BookErrorResult;
 import com.project.bookforeast.book.error.BookException;
 import com.project.bookforeast.book.repository.BookRepository;
 import com.project.bookforeast.common.domain.constant.Content;
-import com.project.bookforeast.common.security.service.SecurityService;
+import com.project.bookforeast.common.security.service.JwtUtil;
 import com.project.bookforeast.file.entity.File;
 import com.project.bookforeast.file.entity.FileGroup;
 import com.project.bookforeast.file.service.FileService;
 import com.project.bookforeast.user.entity.User;
 import com.project.bookforeast.user.service.UserService;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 
 
 @Service
 public class BookServiceImpl implements BookService {
 	private final BookApiService bookApiService;
 	private final BookRepository bookRepository;
-	private final SecurityService securityService;
 	private final UserService userService;
 	private final FileService fileService;
+	private final JwtUtil jwtUtil;
 	
 	@Autowired
 	public BookServiceImpl(BookApiService bookApiService, 
 						   BookRepository bookRepository, 
-						   SecurityService securityService, 
 						   UserService userService, 
-						   FileService fileService) {
+						   FileService fileService,
+						   JwtUtil jwtUtil
+						   ) {
 		this.bookApiService = bookApiService;
 		this.bookRepository = bookRepository;
-		this.securityService = securityService;
 		this.userService = userService;
 		this.fileService = fileService;
+		this.jwtUtil = jwtUtil;
 	}
+
 
 	@Override
 	public BookInfosDTO getBookInfo(int itemSize, String cursor, String searchValue) {
 		return null;
 	}
-	
 		
 
 	@Override
@@ -76,7 +76,7 @@ public class BookServiceImpl implements BookService {
 
 
 	@Override
-	public void insBookInfo(String accessToken, BookDTO bookDTO, MultipartFile file) {
+	public void insBookInfo(BookDTO bookDTO, MultipartFile file) {
 		User findUser = userService.findUserInSecurityContext();
 
 		Book book = bookDTO.toEntity();
@@ -92,7 +92,7 @@ public class BookServiceImpl implements BookService {
 
 
 	@Override
-	public void updBookInfo(String accessToken, BookDTO bookDTO, MultipartFile file) {
+	public void updBookInfo(BookDTO bookDTO, MultipartFile file) {
 		User findUser = userService.findUserInSecurityContext();
 
 		Book book = bookRepository.findByIsbnAndRegistUser(bookDTO.getIsbn(), findUser);
@@ -139,14 +139,16 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public void delBookInfo(String accessToken, String id) {
-		// db에 저장된 책 정보 지우기(파일db에 것 까지 연쇄삭제되어야함)
-		// 서버에 저장된 파일 지우기
-		Book book = bookRepository.findByIsbn(id);
-		FileGroup delFileGroup = book.getThumbnailFileGroup();
-		fileService.deleteFiles(delFileGroup);
-		bookRepository.delete(book);
-
+	public void delBookInfo(String id) {
+		User findUser = userService.findUserInSecurityContext();
+		Book book = bookRepository.findByIsbnAndRegistUser(id, findUser);
+		if(book == null) {
+			throw new BookException(BookErrorResult.NOT_REGISTED_BOOK);
+		} else {
+			FileGroup delFileGroup = book.getThumbnailFileGroup();
+			fileService.deleteFiles(delFileGroup);
+			bookRepository.delete(book);
+		}
 	}
 	
 	

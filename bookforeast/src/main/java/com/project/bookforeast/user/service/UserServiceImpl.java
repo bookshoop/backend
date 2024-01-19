@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,6 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final SecurityService securityService;
 	private final FileService fileService;
-	private final GenreService genreService;
 	private final NicknameService nicknameService;
 	private final JwtUtil jwtUtil;
 	
@@ -66,7 +64,6 @@ public class UserServiceImpl implements UserService {
 		this.userRepository = userRepository;
 		this.securityService = securityService;
 		this.fileService = fileService;
-		this.genreService = genreService;
 		this.nicknameService = nicknameService;
 		this.jwtUtil = jwtUtil;
 	}
@@ -163,9 +160,7 @@ public class UserServiceImpl implements UserService {
 		
 		if(profile != null && profile.getSize() > 0) {
 			FileGroup fileGroup = user.getFileGroup();
-			// 기존파일 서버에서 삭제
 			fileService.deleteFiles(fileGroup);
-			// 새로운파일 저장
 			fileService.fileUpload(profile, fileGroup, "userprofile");
 		}
 		

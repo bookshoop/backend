@@ -130,8 +130,7 @@ public class BookController {
 		})
 	@PostMapping(value = "/api/u/v1/book", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Void> insBookInfo(BookDTO bookDTO,  @RequestPart("multipartFile") MultipartFile file, HttpServletRequest request) {
-		String accessToken = jwtUtil.extractTokenFromHeader(request);
-		bookService.insBookInfo(accessToken, bookDTO, file);		
+		bookService.insBookInfo(bookDTO, file);		
 		return ResponseEntity.ok(null);
 	}
 
@@ -150,8 +149,7 @@ public class BookController {
 		})
 	@PutMapping(value = "/api/u/v1/book", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Void> updBookInfo(BookDTO bookDTO,  @RequestPart("multipartFile") MultipartFile file, HttpServletRequest request) {
-		String accessToken = jwtUtil.extractTokenFromHeader(request);
-		bookService.updBookInfo(accessToken, bookDTO, file);		
+		bookService.updBookInfo(bookDTO, file);		
 		return ResponseEntity.ok(null);
 	}
 
@@ -170,8 +168,7 @@ public class BookController {
 		})
 	@DeleteMapping(value = "/api/u/v1/book/{id}")
 	public ResponseEntity<Void> delBookInfo(HttpServletRequest request, @PathVariable @Valid @Schema(description = "isbn이나 isbn13으로 이루어진 id") @NotBlank String id) {
-		String accessToken = jwtUtil.extractTokenFromHeader(request);
-		bookService.delBookInfo(accessToken, id);
+		bookService.delBookInfo(id);
 		return ResponseEntity.ok(null);
 	}
 }

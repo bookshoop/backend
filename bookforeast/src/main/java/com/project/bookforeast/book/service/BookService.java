@@ -15,9 +15,9 @@ public interface BookService {
 
 	public DetailBookInfoDTO getDetailBookInfo(String id);
 
-	public void insBookInfo(String accessToken, BookDTO bookDTO, MultipartFile file);
+	public void insBookInfo(BookDTO bookDTO, MultipartFile file);
 
-    public void updBookInfo(String accessToken, BookDTO bookDTO, MultipartFile file);
+    public void updBookInfo(BookDTO bookDTO, MultipartFile file);
 
-    public void delBookInfo(String accessToken, String id);
+    public void delBookInfo(String id);
 }
