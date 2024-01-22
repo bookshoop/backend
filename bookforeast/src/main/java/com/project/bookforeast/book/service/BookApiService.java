@@ -7,5 +7,5 @@ public interface BookApiService {
 
 	public BookInfosDTO getBestSellerList(int itemSize, String cursor);
 
-    public DetailBookInfoDTO getDetailBookInfo(String isbn);
+    public DetailBookInfoDTO findByIsbn(String isbn);
 }

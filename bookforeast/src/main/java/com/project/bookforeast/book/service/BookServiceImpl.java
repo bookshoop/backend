@@ -1,6 +1,8 @@
 package com.project.bookforeast.book.service;
 
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,44 +33,46 @@ public class BookServiceImpl implements BookService {
 	
 	@Autowired
 	public BookServiceImpl(BookApiService bookApiService, 
-						   BookRepository bookRepository, 
-						   UserService userService, 
-						   FileService fileService
-						   ) {
+	BookRepository bookRepository, 
+	UserService userService, 
+	FileService fileService
+	) {
 		this.bookApiService = bookApiService;
 		this.bookRepository = bookRepository;
 		this.userService = userService;
 		this.fileService = fileService;
 	}
-
-
+	
+	
 	@Override
 	public BookInfosDTO getBookInfo(int itemSize, String cursor, String searchValue) {
 		return null;
 	}
-		
-
+	
+	
 	@Override
 	public BookInfosDTO getBookBestSellerInfos(int itemSize, String cursor) {		
 		return bookApiService.getBestSellerList(itemSize, cursor);
 	}
 	
-
-	public DetailBookInfoDTO getDetailBookInfo(String id) {
-		DetailBookInfoDTO detailBookInfoDTO = bookApiService.getDetailBookInfo(id);
-		if(detailBookInfoDTO == null) {
-			detailBookInfoDTO = findByIsbn(id);
+	
+	public DetailBookInfoDTO getDetailBookInfoById(Long id) {
+		
+		Optional<Book> bookOptional = bookRepository.findById(id);
+		
+		if(bookOptional.isPresent()) {
+			return bookOptional.get().toDetailBookInfoDTO();
+		} else {
+			return null;
 		}
-
-		return detailBookInfoDTO;
-
 	}
-
-
-	private DetailBookInfoDTO findByIsbn(String isbn) {
-		Book book = bookRepository.findByIsbn(isbn);
-		return book.toDetailBookInfoDTO();
+	
+	
+	@Override
+	public DetailBookInfoDTO getDetailBookInfoByIsbn(String isbn) {
+		return bookApiService.findByIsbn(isbn);
 	}
+		
 
 
 	@Override
@@ -146,6 +150,8 @@ public class BookServiceImpl implements BookService {
 			bookRepository.delete(book);
 		}
 	}
+
+
 	
 	
 

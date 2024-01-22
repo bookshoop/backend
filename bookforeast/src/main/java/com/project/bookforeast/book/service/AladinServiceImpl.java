@@ -12,6 +12,8 @@ import com.project.bookforeast.book.dto.alagin.AladinBookInfosDTO;
 import com.project.bookforeast.book.dto.alagin.AladinDetailRequestDTO;
 import com.project.bookforeast.book.dto.alagin.AladinListRequestDTO;
 import com.project.bookforeast.book.dto.alagin.DetailAladinBookInfoDTO;
+import com.project.bookforeast.book.error.BookErrorResult;
+import com.project.bookforeast.book.error.BookException;
 
 
 @Service
@@ -73,7 +75,7 @@ public class AladinServiceImpl implements BookApiService {
 	
 
 	@Override
-	public DetailBookInfoDTO getDetailBookInfo(String isbn) {
+	public DetailBookInfoDTO findByIsbn(String isbn) {
 		AladinDetailRequestDTO aladinDetailRequestDTO = new AladinDetailRequestDTO();
 		
 		UriComponents uriComponents = UriComponentsBuilder
@@ -82,9 +84,12 @@ public class AladinServiceImpl implements BookApiService {
 									.build();
 		
 		DetailAladinBookInfoDTO detailAladinBookInfoDTO = restTemplate.getForObject(uriComponents.toUri(), DetailAladinBookInfoDTO.class);
-		DetailBookInfoDTO detailBookInfoDTO = dtoChangeService.apiDTOToDetailBookInfoDTO(detailAladinBookInfoDTO.getItem().get(0));
-
-	return detailBookInfoDTO;		
-	
+		
+		if(detailAladinBookInfoDTO.getItem() != null && detailAladinBookInfoDTO.getItem().get(0) != null) {
+			DetailBookInfoDTO detailBookInfoDTO = dtoChangeService.apiDTOToDetailBookInfoDTO(detailAladinBookInfoDTO.getItem().get(0));
+			return detailBookInfoDTO;		
+		} else {
+			throw new BookException(BookErrorResult.NOT_REGISTED_BOOK);
+		}
 	}
 }

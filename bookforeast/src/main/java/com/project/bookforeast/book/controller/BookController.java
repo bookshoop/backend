@@ -5,7 +5,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,7 +18,6 @@ import com.project.bookforeast.book.dto.BookInfosDTO;
 import com.project.bookforeast.book.dto.DetailBookInfoDTO;
 import com.project.bookforeast.book.service.BookService;
 import com.project.bookforeast.common.security.service.JwtUtil;
-import com.project.bookforeast.file.service.FileService;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -106,15 +104,35 @@ public class BookController {
 			 			 description = "1. 엑세스 토큰이 없을 때 \t\n 2. 엑세스 토큰이 만료되었을 때 \t\n 3. 엑세스 토큰으로 유저를 찾을 수 없을 때",
 			 			 content = @Content(schema = @Schema(example = "{\"code\" : \"401\", \"message\" : \"message\"}"))),
 			@ApiResponse(responseCode = "200",
-						 description = "책 상세 정보 가져오기 성공",
+						 description = "책 상세 정보 가져오기 성공 // 책 정보 없을 경우 null 반환",
 						 content = @Content(schema = @Schema(implementation = DetailBookInfoDTO.class)))		
 		})
 	@GetMapping("/api/u/v1/book/{id}")
-	public ResponseEntity<DetailBookInfoDTO> getBookInfo(@PathVariable @Valid @Schema(description = "isbn이나 isbn13으로 이루어진 id") @NotBlank String id) {
-		DetailBookInfoDTO detailBookInfoDTO = bookService.getDetailBookInfo(id);
+	public ResponseEntity<DetailBookInfoDTO> getBookInfoById(@PathVariable @Valid @Schema(description = "bookId") @NotBlank Long id) {
+		DetailBookInfoDTO detailBookInfoDTO = bookService.getDetailBookInfoById(id);
 		return ResponseEntity.ok(detailBookInfoDTO);
 	}
 	
+
+	@SecurityRequirement(name = "Bearer Authentication")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", 
+					     description = "1. 파라미터 값이 없을때 \t\n 2. 파라미터가 부적절한 값일 때",
+					     content = @Content(schema = @Schema(example = "{\"code\" : \"400\", \"message\" : \"message\"}"))),
+			@ApiResponse(responseCode = "401",
+			 			 description = "1. 엑세스 토큰이 없을 때 \t\n 2. 엑세스 토큰이 만료되었을 때 \t\n 3. 엑세스 토큰으로 유저를 찾을 수 없을 때",
+			 			 content = @Content(schema = @Schema(example = "{\"code\" : \"401\", \"message\" : \"message\"}"))),
+			@ApiResponse(responseCode = "200",
+						 description = "책 상세 정보 가져오기 성공 // 책 정보 없을 경우 null 반환",
+						 content = @Content(schema = @Schema(implementation = DetailBookInfoDTO.class)))		
+		})
+	@GetMapping("/api/u/v1/book/{isbn}")
+	public ResponseEntity<DetailBookInfoDTO> getBookInfoByIsbn(@PathVariable @Valid @Schema(description = "isbn") @NotBlank String isbn) {
+		DetailBookInfoDTO detailBookInfoDTO = bookService.getDetailBookInfoByIsbn(isbn);
+		return ResponseEntity.ok(detailBookInfoDTO);
+	}
+
+
 
 	@SecurityRequirement(name = "Bearer Authentication")
 	@ApiResponses(value = {
