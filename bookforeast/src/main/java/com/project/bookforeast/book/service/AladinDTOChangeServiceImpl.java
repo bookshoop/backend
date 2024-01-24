@@ -61,14 +61,12 @@ public class AladinDTOChangeServiceImpl implements DTOChangeService {
 		SimpleBookInfoDTO.SimpleBookInfoDTOBuilder builder = SimpleBookInfoDTO.builder();
 		String title = simpleAladinBookInfoDTO.getTitle();
 		String writer = makeWriterFormat(simpleAladinBookInfoDTO.getAuthor());
-		String id = makeIdForamt(simpleAladinBookInfoDTO);
 		String thumbnailLink = simpleAladinBookInfoDTO.getCover();
 		String category = categoryService.classifyCatg(simpleAladinBookInfoDTO.getCategoryName());
 		String nextCursor = makeNextCursorFormat(cursor, index);
 
 		builder.title(title)
 			   .writer(writer)
-			   .id(id)
 			   .thumbnailLink(thumbnailLink)
 			   .category(category)
 			   .cursor(nextCursor);
@@ -114,7 +112,6 @@ public class AladinDTOChangeServiceImpl implements DTOChangeService {
 		}
 
 		DetailAladinBookInfoDTO.Item detailAladinBookInfoDTO = (DetailAladinBookInfoDTO.Item) apiBookInfoDTO;
-		String id = makeIdForamt(detailAladinBookInfoDTO);
 		String title = detailAladinBookInfoDTO.getTitle();
 		String thumbnailLink = detailAladinBookInfoDTO.getCover();
 		String category = categoryService.classifyCatg(detailAladinBookInfoDTO.getCategoryName());
@@ -127,8 +124,7 @@ public class AladinDTOChangeServiceImpl implements DTOChangeService {
 		String publisher = detailAladinBookInfoDTO.getPublisher();
 
 		DetailBookInfoDTO.DetailBookInfoDTOBuilder builder = DetailBookInfoDTO.builder();
-		builder.id(id)
-			   .title(title)
+		builder.title(title)
 			   .thumbnailLink(thumbnailLink)
 			   .category(category)
 			   .writer(writer)
@@ -151,17 +147,4 @@ public class AladinDTOChangeServiceImpl implements DTOChangeService {
 		}
 			
 			
-
-
-	private String makeIdForamt(ApiBookInfoDTO apiBookInfoDTO) {
-		String isbn = apiBookInfoDTO.getIsbn();
-		String isbn13 = apiBookInfoDTO.getIsbn();
-		
-		if(isbn13 == null || isbn13.length() == 0) {
-			return isbn;
-		}
-		return isbn13;
-	}
-
-
 }

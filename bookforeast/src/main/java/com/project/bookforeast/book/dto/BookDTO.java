@@ -37,6 +37,8 @@ public class BookDTO {
 	@Hidden
 	private LocalDateTime registDt;
 	private int price;
+
+	private String thumbnailLink;
 	
 	
 	public Book toEntity() {
@@ -47,7 +49,8 @@ public class BookDTO {
 										.publisher(publisher)
 										.writer(writer)
 										.description(description)
-										.price(price);
+										.price(price)
+										.thumbnailLink(thumbnailLink);
 		
 		if(registUserDTO != null) {
 			bookBuilder.registUser(registUserDTO.toEntity());

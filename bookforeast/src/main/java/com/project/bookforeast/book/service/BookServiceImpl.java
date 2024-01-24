@@ -1,6 +1,8 @@
 package com.project.bookforeast.book.service;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,6 @@ import com.project.bookforeast.book.error.BookErrorResult;
 import com.project.bookforeast.book.error.BookException;
 import com.project.bookforeast.book.repository.BookRepository;
 import com.project.bookforeast.common.domain.constant.Content;
-import com.project.bookforeast.common.security.service.JwtUtil;
 import com.project.bookforeast.file.entity.File;
 import com.project.bookforeast.file.entity.FileGroup;
 import com.project.bookforeast.file.service.FileService;
@@ -72,13 +73,13 @@ public class BookServiceImpl implements BookService {
 	public DetailBookInfoDTO getDetailBookInfoByIsbn(String isbn) {
 		return bookApiService.findByIsbn(isbn);
 	}
-		
-
-
+	
+	
+	
 	@Override
-	public void insBookInfo(BookDTO bookDTO, MultipartFile file) {
+	public void insBookInfoByUser(BookDTO bookDTO, MultipartFile file) {
 		User findUser = userService.findUserInSecurityContext();
-
+		
 		Book book = bookDTO.toEntity();
 		book.setRegistUser(findUser);
 		
@@ -86,8 +87,31 @@ public class BookServiceImpl implements BookService {
 			File savedFile = fileService.fileUpload(file, null, Content.BOOK.getContentName());
 			book.setThumbnailFileGroup(savedFile.getFileGroup());
 		}
-
+		
 		bookRepository.save(book);
+	}
+	
+
+			// bookId가 있는 경우에는 우리 db에 저장된 것
+			// bookId가 없는 경우에는 알라딘에서 들고온 것
+
+			// 유저가 서재에 등록 요청 -> 서재에 등록할 책 중 bookId가 없는 것에 대해서 우리 db에 저장
+
+			// 알라딘 api에서 들고온 경우 thumbnaillink 무조건 저장, 유저가 직접 등록한 책의 경우 thumnaillink저장 할 것인가
+
+			// 일단 유저는 무조건 직접 책을 등록을 한 다음에서야 그걸 찾아서 서재에 넣을 수 있음
+			// 책 한권 유저가 등록할 때 thumbnail을 넣을 것
+			// 알라딘 api에서 들고온 책의 경우 리스트로 직어넣을 것 insBookInfos라고 하지말고 insAladinBookInfosToDB로 하자
+
+
+	public void insAladinBookInfosToDB(List<DetailBookInfoDTO> detailBookInfoDTOs) {
+		List<Book> bookList = new ArrayList<>();
+		detailBookInfoDTOs.forEach(detailBookInfoDTO -> {
+			Book book = detailBookInfoDTO.toEntity();
+			bookList.add(book);
+		});
+
+		bookRepository.saveAll(bookList);
 	}
 
 
@@ -150,6 +174,8 @@ public class BookServiceImpl implements BookService {
 			bookRepository.delete(book);
 		}
 	}
+
+
 
 
 	

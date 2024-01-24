@@ -1,5 +1,7 @@
 package com.project.bookforeast.book.service;
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.bookforeast.book.dto.BookDTO;
@@ -12,7 +14,9 @@ public interface BookService {
 
 	public BookInfosDTO getBookBestSellerInfos(int itemSize, String cursor);
 
-	public void insBookInfo(BookDTO bookDTO, MultipartFile file);
+	public void insBookInfoByUser(BookDTO bookDTO, MultipartFile file);
+    
+    public void insAladinBookInfosToDB(List<DetailBookInfoDTO> detailBookInfoDTOs);
 
     public void updBookInfo(BookDTO bookDTO, MultipartFile file);
 
@@ -21,4 +25,5 @@ public interface BookService {
     public DetailBookInfoDTO getDetailBookInfoById(Long id);
 
     public DetailBookInfoDTO getDetailBookInfoByIsbn(String isbn);
+
 }

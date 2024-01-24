@@ -1,5 +1,7 @@
 package com.project.bookforeast.book.dto;
 
+import com.project.bookforeast.book.entity.Book;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.AllArgsConstructor;
@@ -15,8 +17,8 @@ import lombok.Setter;
 @Builder
 public class DetailBookInfoDTO {
 
-	@Schema(description = "isbn / isbn13 / id")
-	private String id;
+	@Schema(description = "우리 db에 있는 책의 경우 주어지는 bookId")
+	private Long bookId;
 	
 	@Schema(description = "책제목", requiredMode = RequiredMode.REQUIRED)
 	private String title;
@@ -36,7 +38,7 @@ public class DetailBookInfoDTO {
 	@Schema(description = "책 소개")
 	private String description;
 	
-	@Schema(description = "isbn")
+	@Schema(description = "isbn13이 없을경우 제공되는 isbn")
 	private String isbn;
 	
 	@Schema(description = "isbn13")
@@ -48,4 +50,25 @@ public class DetailBookInfoDTO {
 	@Schema(description = "출판사")
 	private String publisher;
 	
-}
+
+	public Book toEntity() {
+		Book.BookBuilder builder = Book.builder();
+
+		builder.bookId(bookId)
+			   .title(title)
+			   .publisher(publisher)
+			   .writer(writer)
+			   .description(description)
+			   .price(price)
+			   .thumbnailLink(thumbnailLink);
+
+ 		if(isbn13 != null || !isbn13.equals("")) {
+			builder.isbn(isbn13);
+		} else {
+			builder.isbn(isbn);
+		}
+
+
+		return builder.build();
+	}
+} 

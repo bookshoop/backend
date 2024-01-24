@@ -1,5 +1,7 @@
 package com.project.bookforeast.book.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +62,7 @@ public class BookController {
 		return ResponseEntity.ok(null);
 	}
 	
+
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "400", 
 					     description = "1. 파라미터 값이 없을때 \t\n 2. 파라미터가 부적절한 값일 때",
@@ -147,8 +150,8 @@ public class BookController {
 						 )		
 		})
 	@PostMapping(value = "/api/u/v1/book", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Void> insBookInfo(BookDTO bookDTO,  @RequestPart("multipartFile") MultipartFile file, HttpServletRequest request) {
-		bookService.insBookInfo(bookDTO, file);		
+	public ResponseEntity<Void> insBookInfoByUser(BookDTO bookDTO,  @RequestPart("multipartFile") MultipartFile file, HttpServletRequest request) {
+		bookService.insBookInfoByUser(bookDTO, file);		
 		return ResponseEntity.ok(null);
 	}
 

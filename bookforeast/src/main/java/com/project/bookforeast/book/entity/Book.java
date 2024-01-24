@@ -44,7 +44,7 @@ public class Book {
 	@JoinColumn(name = "user_id", updatable = false)
 	private User registUser;
 	
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
 	private FileGroup thumbnailFileGroup;
 	
 	private String title;
@@ -52,6 +52,7 @@ public class Book {
 	private String writer;
 	private String description;
 	private int price;
+	private String thumbnailLink;
 
 	@Column(updatable = false)
 	@CreationTimestamp
@@ -68,6 +69,7 @@ public class Book {
 													.description(description)
 													.registDt(registDt)
 													.price(price)
+													.thumbnailLink(thumbnailLink)
 													;
 		
 		if(registUser != null) {
@@ -85,7 +87,7 @@ public class Book {
     public DetailBookInfoDTO toDetailBookInfoDTO() {
 		DetailBookInfoDTO.DetailBookInfoDTOBuilder builder = DetailBookInfoDTO.builder();
 
-		builder.id(isbn)
+		builder
 			   .title(title)
 			   .writer(writer)
 			   .publisher(publisher)
@@ -94,10 +96,12 @@ public class Book {
 			   .isbn13(isbn)
 			   .price(price);
 
-		if(thumbnailFileGroup != null) {
+		if(thumbnailFileGroup != null && thumbnailLink == null) {
 			File file = thumbnailFileGroup.getFileList().get(0);
 			
 			String thumbnailLink = file.getPath() + "/" + file.getName() + "." + file.getExtension();
+			builder.thumbnailLink(thumbnailLink);
+		} else {
 			builder.thumbnailLink(thumbnailLink);
 		}		
 
