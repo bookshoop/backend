@@ -9,6 +9,8 @@ import lombok.Setter;
 @Setter
 @Builder
 public class SimpleAladinBookInfoDTO extends ApiBookInfoDTO {
+	private String isbn;
+	private String isbn13;
 	private String title; // 도서 제목
 	private String author; // 저자
 	private String categoryName; // 카테고리명

@@ -59,24 +59,34 @@ public class AladinDTOChangeServiceImpl implements DTOChangeService {
 
     private SimpleBookInfoDTO apiDTOToSimpleBookInfoDTO(SimpleAladinBookInfoDTO simpleAladinBookInfoDTO, int index, String cursor) {
 		SimpleBookInfoDTO.SimpleBookInfoDTOBuilder builder = SimpleBookInfoDTO.builder();
+		String isbn = makeIsbnFormat(simpleAladinBookInfoDTO); 
 		String title = simpleAladinBookInfoDTO.getTitle();
 		String writer = makeWriterFormat(simpleAladinBookInfoDTO.getAuthor());
 		String thumbnailLink = simpleAladinBookInfoDTO.getCover();
 		String category = categoryService.classifyCatg(simpleAladinBookInfoDTO.getCategoryName());
 		String nextCursor = makeNextCursorFormat(cursor, index);
-
-		builder.title(title)
+		
+		builder.isbn(isbn)
+		       .title(title)
 			   .writer(writer)
 			   .thumbnailLink(thumbnailLink)
 			   .category(category)
 			   .cursor(nextCursor);
-	
+		
 		return builder.build();
+	}
+	
+	
+    
+	
+	private String makeIsbnFormat(SimpleAladinBookInfoDTO simpleAladinBookInfoDTO) {
+		String isbn = simpleAladinBookInfoDTO.getIsbn();
+		String isbn13 = simpleAladinBookInfoDTO.getIsbn13();
+
+		return isbn13 == null ? isbn13 : isbn;
 	}
 
 
-    
-	
 	private boolean checkHasMore(int total, String cursor, int itemSize) {
 		boolean hasMore = false;
 		if(cursor == null) {

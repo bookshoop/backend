@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,7 +49,31 @@ public class BookServiceImpl implements BookService {
 	
 	
 	@Override
-	public BookInfosDTO getBookInfo(int itemSize, String cursor, String searchValue) {
+	public BookInfosDTO getBookInfos(int itemSize, String cursor, String searchValue) {
+
+	 	// 1. 검색때렸을 때 해당 유저가 등록한 책이 있는 경우에는 해당 유저가 등록한 책 부터 보여주고 커서만들기
+		//  1-1. 해당 유저가 등록한 책이 hasnext가 있는 경우 -> 로직 끝
+		//  1-2. 해당 유저가 등록한 책이 hasnext가 없지만 itemSize와 같은 경우 -> 로직 끝
+		//  1-3. 해당 유저가 등록한 책이 hasnext가 없고, itemSize보다 작은 경우 -> 2으로 넘어감
+
+		// 3. 우리 db에서 파라미터의 다음 커서부터 데이터 가지고오기
+		//  3-1. 1-3에서 넘어온 경우(파라미터의 cursor가 유저가 등록된 책으로 표시된 경우) -> 우리 db에 저장된 책들 처음부터 itemsize - 해당 유저가 등록한 첵 크기만큼 가지고 오기
+		//    3-1-1. 해당유저가 등록한 책과 우리 db에 저장된 책 정보 중 중복이 있는지 확인
+		//    3-1-2. 중복이 있을 경우 중복된 것은 유저가 등록한 것에서 선택하고 중복된 것의 개수만큼 우리 db에서 가지고와 itemSize맞추기
+		//  3-2. 우리 db에서 가지고 온 것이 hasnext가 있는 경우 -> 로직 끝
+		//  3-3. 우리 db에 있는 것이 hasnext가 없지만 itemSize와 같은 경우 -> 로직 끝
+		//  3-4. 우리 db에 있는 것이 hasnext가 없고, itemSize보다 작은 경우 -> 4로 넘어감
+
+		// 4. 알라딘 db에서 가지고오기
+		//  4-1. 2-3에서 넘어온 경우(파라미터의 cursor가 우리 db로 표기된 경우) -> 알라딘 db의 처음부터 itemsize - 우리db에서 가지고 온 것의 크기만큼 가지고 오기
+		//    4-1-1. 우리 db와 알라딘 db에 있는 것이 중복이 있는지 확인
+		//    4-1-2. 중복이 있을 경우 중복된 것은 우리 db에서 가지고 오고, 중복된 것의 개수만큼 알라딘 db에서 가지고와 itemSize맞추기
+		//  4-2. cursor가 알라딘 db로 표기된 경우 -> 알라딘 db에서 파라미터의 다음 커서부터 가져오기
+		
+		Pageable page = PageRequest.of(0, itemSize);
+
+		// BookInfosDTO bookInfosDTO = bookRepository.findEntitiesBySearchValue()
+
 		return null;
 	}
 	

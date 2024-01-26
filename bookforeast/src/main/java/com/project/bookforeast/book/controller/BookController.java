@@ -55,10 +55,10 @@ public class BookController {
 						 content = @Content(schema = @Schema(implementation = BookInfosDTO.class)))		
 		})
 	@GetMapping("/api/u/v1/books")
-	public ResponseEntity<BookInfosDTO> getBookInfo(@Schema(requiredMode = RequiredMode.NOT_REQUIRED, defaultValue = "10") @RequestParam(defaultValue = "10") int itemSize, 
+	public ResponseEntity<BookInfosDTO> getBookInfos(@Schema(requiredMode = RequiredMode.NOT_REQUIRED, defaultValue = "10") @RequestParam(defaultValue = "10") int itemSize, 
 													@Schema(requiredMode = RequiredMode.NOT_REQUIRED, description = "없을경우 첫페이지야") @RequestParam String cursor, 
 													@Schema(requiredMode = RequiredMode.NOT_REQUIRED) @RequestParam String searchValue) {
-		BookInfosDTO bookInfosDTO = bookService.getBookInfo(itemSize, cursor, searchValue);
+		BookInfosDTO bookInfoDTOs = bookService.getBookInfos(itemSize, cursor, searchValue);
 		return ResponseEntity.ok(null);
 	}
 	
